@@ -18,8 +18,6 @@ installnode:
 installpsql:
 	sudo apt install postgresql
 
-initialize:
-	docker -d
 
 createVolume:
 	mkdir -p ~/psql_data

@@ -41,6 +41,9 @@
 # Precompiled Headers
 *.gch
 *.pch
+#Node
+node_modules/
+
 
 # Compiled Dynamic libraries
 *.so
