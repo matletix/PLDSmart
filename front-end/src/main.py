@@ -24,8 +24,7 @@ Builder.load_string("""
         	text: "Visiter l'application"
         	font_size: 26
         	on_press:
-        		root.manager.current = 'gamemode'
-            	root.manager.transition.direction = 'left'
+        		root.visit_Appli()
 
 <GameModeScreen>:
     BoxLayout:
@@ -38,29 +37,68 @@ Builder.load_string("""
         Button:
             text: "Mode détente"
             font_size: 26
+            on_press: 
+                root.chill_mode()
         Button:
             text: "Mode compétitif"
             font_size: 26
         Button:
-            text: 'Back to menu'
-            font_size: 26
+            text: "Retour"
+            font_size: 20
             on_press:
-            	root.manager.current = 'menu'
-            	root.manager.transition.direction ='right'
+            	root.back_to_menu()
+<ChillScreen>:
+	BoxLayout:
+		orientation: 'vertical'
+    	padding: [10,50,10,50]
+    	spacing: 30
+    	Label:
+    		text: "Mode détente"
+    		font_size: 34
+		Label:
+			text: "Choisis ton niveau !"
+            font_size: 30
+        Button:
+            text: "Niveau 1"
+            font_size: 26
+        Button:
+            text: "Niveau 2"
+            font_size: 26
+        Button:
+            text: "Niveau 3"
+            font_size: 26
+        Button:
+            text: "Retour"
+            font_size: 20
+            on_press:
+                root.back_to_menu()
 
 """)
 
-# Declare both screens
+# Declaration des screens
 class MenuScreen(Screen):
-    pass
+    def visit_Appli(self):
+        self.manager.current = 'gamemode'
+        self.manager.transition.direction = 'left'
 
 class GameModeScreen(Screen):
-    pass
+    def back_to_menu(self):
+        self.manager.current = 'menu'
+        self.manager.transition.direction ='right'
+    def chill_mode(self):
+        self.manager.current = 'chillScreen'
+        self.manager.transition.direction ='left'
 
-# Create the screen manager
+class ChillScreen(Screen):
+    def back_to_menu(self):
+        self.manager.current = 'gamemode'
+        self.manager.transition.direction ='right'
+
+# Creation du screenmanager
 sm = ScreenManager()
 sm.add_widget(MenuScreen(name='menu'))
 sm.add_widget(GameModeScreen(name='gamemode'))
+sm.add_widget(ChillScreen(name='chillScreen'))
 
 class TestApp(App):
 
