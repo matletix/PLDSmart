@@ -61,6 +61,8 @@ Builder.load_string("""
         Button:
             text: "Niveau 1"
             font_size: 26
+            on_press:
+                root.level_1()
         Button:
             text: "Niveau 2"
             font_size: 26
@@ -72,6 +74,27 @@ Builder.load_string("""
             font_size: 20
             on_press:
                 root.back_to_menu()
+<Level_1_Screen>
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [10,50,10,50]
+        spacing: 30
+        Label:
+            text: "Niveau 1"
+            font_size: 34
+        Label:
+            text: "Choisis ton parcours !"
+            font_size: 30
+        Button:
+            text: "Parcours 1"
+            font_size: 26
+            size: (200, 100)
+        Button:
+            text: "Retour"
+            font_size: 20
+            on_press:
+                root.back_to_menu()
+
 
 """)
 
@@ -92,13 +115,23 @@ class GameModeScreen(Screen):
 class ChillScreen(Screen):
     def back_to_menu(self):
         self.manager.current = 'gamemode'
-        self.manager.transition.direction ='right'
+        self.manager.transition.direction = 'right'
+    def level_1(self):
+        self.manager.current = 'level_1'
+        self.manager.transition.direction = 'left'
+
+class Level_1_Screen(Screen):
+    def back_to_menu(self):
+        self.manager.current = 'chillScreen'
+        self.manager.transition.direction = 'right'
+
 
 # Creation du screenmanager
 sm = ScreenManager()
 sm.add_widget(MenuScreen(name='menu'))
 sm.add_widget(GameModeScreen(name='gamemode'))
 sm.add_widget(ChillScreen(name='chillScreen'))
+sm.add_widget(Level_1_Screen(name= 'level_1'))
 
 class TestApp(App):
 
