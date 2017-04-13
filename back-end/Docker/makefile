@@ -16,7 +16,7 @@ installnode:
 	sudo apt install -y build-essential
 
 installpsql:
-	sudo apt install postgresql
+	sudo apt install -y postgresql
 
 
 createVolume:
@@ -40,3 +40,9 @@ remove:
 	docker rm postgis
 
 #data (sql) storage ... ?
+
+## PSQL
+setupDB:
+	psql -h localhost postgres -U docker -f create_db.sql 
+	psql -h localhost felicity -U docker -f create_table.sql
+	psql -h localhost felicity -U docker -f insert_datas.sql

@@ -1,0 +1,38 @@
+<RestClientRequest>
+  <option name="biscuits">
+    <list />
+  </option>
+  <option name="httpMethod" value="POST" />
+  <option name="urlBase" value="http://localhost:8080" />
+  <option name="urlPath" value="api/test" />
+  <option name="headers">
+    <list>
+      <KeyValuePair>
+        <option name="key" value="Accept" />
+        <option name="value" value="*/*" />
+      </KeyValuePair>
+      <KeyValuePair>
+        <option name="key" value="Cache-Control" />
+        <option name="value" value="no-cache" />
+      </KeyValuePair>
+      <KeyValuePair>
+        <option name="key" value="Content-Type" />
+        <option name="value" value="application/json" />
+      </KeyValuePair>
+    </list>
+  </option>
+  <option name="parameters">
+    <list>
+      <KeyValuePair>
+        <option name="key" value="" />
+        <option name="value" value="" />
+      </KeyValuePair>
+    </list>
+  </option>
+  <option name="parametersEnabled" value="true" />
+  <option name="haveTextToSend" value="true" />
+  <option name="haveFileToSend" value="false" />
+  <option name="isFileUpload" value="false" />
+  <option name="textToSend" value="{&quot;token&quot;:&quot;eyJhbGciOiJIUzI1NiCJ9.eyJwc2V1ZG8iOiJ0YXRhIiwiaWF0IjoxNDkyMDg1MjU2LCJleHAiOjE0OTIxNzE2NTZ9.QfS6-oFS0XL4jTg-RRIvKBify9wMPA5eUkK7Xyo5ZRY&quot;}" />
+  <option name="filesToSend" value="" />
+</RestClientRequest>

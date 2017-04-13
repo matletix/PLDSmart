@@ -1,111 +1,79 @@
-## Wobble
+## Identification / inscription
 
-This is our high-quality wobbles API. You can use this API to request
-and remove different wobbles at a low wibble price.
+Cette partie de l'API est pour l'identification / inscription des utilisateurs.
 
-### List wobbles
 
-Lists all wobbles for a particular account.
+### Authentification
+
+Two responses are possible. If it suceeds, it send back a token (and 200 as response code), if it fails, it sends back (401).
 
 ```endpoint
-GET /wobbles/v1/{username} wobbles:read
+POST http://localhost:8080/authentification
 ```
 
 #### Example request
 
 ```curl
-$ curl https://wobble.biz/wobbles/v1/{username}
+curl -X POST --data {"pseudo":"toto", "mdp":"mdp"} https://localhost:8080/authentification
 ```
 
-```bash
-$ wbl wobbles list
-```
-
-```javascript
-client.listWobbles(function(err, wobbles) {
-  console.log(wobbles);
-});
-```
-
-```python
-wobbles.list()
-```
-
-#### Example response
-
-```json
-[
-  {
-    "owner": "{username}",
-    "id": "{wobble_id}",
-    "created": "{timestamp}",
-    "modified": "{timestamp}"
-  },
-  {
-    "owner": "{username}",
-    "id": "{wobble_id}",
-    "created": "{timestamp}",
-    "modified": "{timestamp}"
-  }
-]
-```
-
-### Create wobble
-
-Creates a new, empty wobble.
-
-```endpoint
-POST /wobbles/v1/{username}
-```
-
-#### Example request
-
-```curl
-curl -X POST https://wobble.biz/wobbles/v1/{username}
-```
-
-```bash
-$ wbl wobbles create
-```
-
-```javascript
-client.createWobble({
-  name: 'example',
-  description: 'An example wobble'
-}, function(err, wobble) {
-  console.log(wobble);
-});
-```
-
-```python
-response = wobbles.create(
-  name='example', description='An example wobble')
-```
 
 #### Example request body
 
 ```json
 {
-  "name": "foo",
-  "description": "bar"
+  "pseudo":"tata",
+   "mdp":"mdp"
 }
 ```
 
 Property | Description
 ---|---
-`name` | (optional) the name of the wobble
-`description` | (optional) a description of the wobble
+`pseudo` |  the pseudo
+`mdp` | the password
 
 #### Example response
 
 ```json
 {
-  "owner": "{username}",
-  "id": "{wobble_id}",
-  "name": null,
-  "description": null,
-  "created": "{timestamp}",
-  "modified": "{timestamp}"
+  "token":"iJIUzI1NiCJ9.eyJwc2V1Z"
+}
+```
+
+### Get geoPoints
+
+Returns a set of 3 points, as a GeoJson Multipoint
+
+```endpoint
+GET /api/getTestDatas?token=MYTOKEN
+```
+
+#### Example request
+
+```curl
+$ curl http://localhost:8080/api/getTestDatas?token=MYTOKEN
+```
+
+
+#### Example response
+
+```json
+{
+  "type": "MultiPoint",
+  "coordinates": [
+    [
+      4.823473,
+      45.76263
+    ],
+    [
+      4.81806,
+      45.731135
+    ],
+    [
+      4.831275,
+      45.753226
+    ]
+  ]
 }
 ```
 
