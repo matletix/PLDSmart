@@ -60,6 +60,7 @@ Builder.load_string("""
         Label:
             text: "Mode détente"
             font_size: 34
+            size_hint: (1,0.5)
         Label:
             text: "Choisis ton niveau !"
             font_size: 30
@@ -77,6 +78,7 @@ Builder.load_string("""
         Button:
             text: "Retour"
             font_size: 20
+            size_hint: (1,0.5)
             on_press:
                 root.back_to_menu()
 
@@ -88,6 +90,7 @@ Builder.load_string("""
         Label:
             text: "Niveau 1"
             font_size: 34
+            size_hint: (1,0.5)
         Label:
             text: "Choisis ton parcours !"
             font_size: 30
@@ -97,35 +100,46 @@ Builder.load_string("""
             on_press:
                 root.parcours_1()
         Button:
+            text: "Parcours 2"
+            font_size: 26
+        Button:
+            text: "Parcours 3"
+            font_size: 26
+        Button:
             text: "Retour"
+            size_hint: (1,0.5)
             font_size: 20
             on_press:
                 root.back_to_menu()
 
 <Parcours_1_Screen>
-    
-    MapView:
-        lat: 45.75
-        lon: 4.85
-        zoom: 15
-        map_source: MapSource(sys.argv[1], attribution="") if len(sys.argv) > 1 else "osm"
-
-        MapMarkerPopup:
+    BoxLayout:
+        orientation: 'vertical'    
+        MapView:
             lat: 45.75
             lon: 4.85
-            popup_size: dp(230), dp(130)
+            zoom: 15
+            map_source: MapSource(sys.argv[1], attribution="") if len(sys.argv) > 1 else "osm"
 
-            Bubble:
-                BoxLayout:
-                    orientation: "horizontal"
-                    padding: "5dp"
-                    AsyncImage:
-                        source: "http://www.cityzeum.com/images/lieu/bigstock-basilica-of-notre-dame-de-four-47809538.jpg"
-                        mipmap: True
-                    Label:
-                        text: "[b]Lyon[/b]\\n1 506 615 hab\\n5 10 583 hab./km2"
-                        markup: True
-                        halign: "center"
+            MapMarkerPopup:
+                lat: 45.75
+                lon: 4.85
+                popup_size: dp(230), dp(130)
+
+                Bubble:
+                    BoxLayout:
+                        orientation: "horizontal"
+                        padding: "5dp"
+                        Label:
+                            text: "[b]Lyon[/b]\\n1 506 615 hab\\n5 10 583 hab./km2"
+                            markup: True
+                            halign: "center"
+        Button:
+            text: "Retour"
+            size_hint: (1, 0.15)
+            font_size: 20
+            on_press:
+                root.back_to_menu()
 
 """)
 
@@ -160,7 +174,9 @@ class Level_1_Screen(Screen):
         self.manager.transition.direction = 'left'
 
 class Parcours_1_Screen(Screen):
-    pass
+    def back_to_menu(self):
+        self.manager.current = 'level_1'
+        self.manager.transition.direction = 'right'
 
 # Creation du screenmanager
 sm = ScreenManager()
