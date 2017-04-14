@@ -5,8 +5,8 @@ from kivy.config import Config
 
 Config.set('graphics', 'width', '400')
 Config.set('graphics', 'height', '600')
-import mapview
 
+from kivy.garden import mapview
 Builder.load_string("""
 #:import sys sys
 #:import MapSource mapview.MapSource
