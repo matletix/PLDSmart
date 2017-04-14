@@ -2,11 +2,11 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.config import Config
+from kivy.garden import mapview
 
 Config.set('graphics', 'width', '400')
 Config.set('graphics', 'height', '600')
 
-from kivy.garden import mapview
 Builder.load_string("""
 #:import sys sys
 #:import MapSource mapview.MapSource
