@@ -84,38 +84,37 @@ app.get('/signuptest', function(req, res) {
 });
 
 app.post('/authentificate', function(req, res) {
-    var existInSql = false;
+
 
     var tables = [];
     tables.push(new Table('user_data', 'pseudo'));
     var _pgdao = new pgDAO(tables);
-    var errSQL, resSQL;
-    _pgdao.count({'pseudo': req.body.pseudo, 'mdp': req.body.mdp}, errSQL, resSQL);
 
-    console.log(resSQL);
+    var resultCallback = function(resSQL){
 
-    if(errSQL) {
-        return console.error('error running query', errSQL);
+        var existInSql = false;
+        console.log('row:', resSQL.rows[0].count);
+        if(resSQL.rows[0].count.toString() === "1") {
+            existInSql = true;
+        }
+
+        if(existInSql){
+            console.log("EXIST");
+
+            // Create a token
+            var token = jwt.sign({'pseudo': req.body.pseudo}, '+super**Secret!', {
+                expiresIn: '24h' // expires in 24 hours
+            });
+
+            res.status(200).send({token: token});
+        } else {
+            console.log("DON T EXIST");
+            res.status(401).send({ error: "Unauthorized :(" });
+        }
     }
 
-    console.log('row:', resSQL.rows[0].count);
-    if(resSQL.rows[0].count.toString() === "1") {
-        existInSql = true;
-    }
+    _pgdao.count({'pseudo': req.body.pseudo, 'mdp': req.body.mdp}, resultCallback);
 
-    if(existInSql){
-        console.log("EXIST");
-
-        // Create a token
-        var token = jwt.sign({'pseudo': req.body.pseudo}, '+super**Secret!', {
-            expiresIn: '24h' // expires in 24 hours
-        });
-
-        res.status(200).send({token: token});
-    } else {
-        console.log("DON T EXIST");
-        res.status(401).send({ error: "Unauthorized :(" });
-    }
 }) ;
 
 router.get('/getTestDatas', function(req, res){

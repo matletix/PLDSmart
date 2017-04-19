@@ -59,28 +59,31 @@ pgDAO.prototype.buildQuery = function (_params){
 
 };
 
-pgDAO.prototype.findOne = function(_params,err,res){
+pgDAO.prototype.findOne = function(_params, resultCallback, errorCallback){
     // Build the query
     var query = this.buildQuery(_params);
     query = 'SELECT * FROM ' + query;
     pool.query(query, [], function(errSQL, resSQL){
-        err = errSQL;
-        res = resSQL;
+        if(errSQL) {
+            if (errorCallback) errorCallback(errSQL);
+            return console.error('error running query', errSQL);
+        }
+        resultCallback(resSQL);
     });
 }
 
-pgDAO.prototype.count = function(_params,err,res){
+pgDAO.prototype.count = function(_params,resultCallback, errorCallback){
     // Build the query
     var query = this.buildQuery(_params);
     query = 'SELECT COUNT(*) FROM ' + query;
-    var _err = 'ttt', _res;
-    // TODO: passage par ref
-    pool.query(query, [], function(err, res){
-        _err = err;
-        _res = res;
-        console.log('count : ', _err, ' : ', _res);
+    pool.query(query, [], function(errSQL, resSQL){
+
+        if(errSQL) {
+            if (errorCallback) errorCallback(errSQL);
+            return console.error('error running query', errSQL);
+        }
+        resultCallback(resSQL);
+
     });
-
-
 
 }
