@@ -8,6 +8,8 @@ var bodyParser = require('body-parser');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var geoJson = require('geojson-tools');
 
+var pgDAO = require('./pgDAO.js');
+var Table = require('./Table.js');
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -84,31 +86,37 @@ app.get('/signuptest', function(req, res) {
 app.post('/authentificate', function(req, res) {
     var existInSql = false;
 
-    pool.query('SELECT COUNT(*) FROM user_data WHERE pseudo=$1 AND mdp=$2', [req.body.pseudo, req.body.mdp], function(errSQL, resSQL) {
+    var tables = [];
+    tables.push(new Table('user_data', 'pseudo'));
+    var _pgdao = new pgDAO(tables);
+    var errSQL, resSQL;
+    _pgdao.count({'pseudo': req.body.pseudo, 'mdp': req.body.mdp}, errSQL, resSQL);
 
-        if(errSQL) {
-            return console.error('error running query', errSQL);
-        }
-        console.log('row:', resSQL.rows[0].count);
-        if(resSQL.rows[0].count.toString() === "1") {
-            existInSql = true;
-        }
+    console.log(resSQL);
 
-        if(existInSql){
-            console.log("EXIST");
+    if(errSQL) {
+        return console.error('error running query', errSQL);
+    }
 
-            // Create a token
-            var token = jwt.sign({'pseudo': req.body.pseudo}, '+super**Secret!', {
-                expiresIn: '24h' // expires in 24 hours
-            });
+    console.log('row:', resSQL.rows[0].count);
+    if(resSQL.rows[0].count.toString() === "1") {
+        existInSql = true;
+    }
 
-            res.status(200).send({token: token});
-        } else {
-            console.log("DON T EXIST");
-            res.status(401).send({ error: "Unauthorized :(" });
-        }
+    if(existInSql){
+        console.log("EXIST");
 
-    })}) ;
+        // Create a token
+        var token = jwt.sign({'pseudo': req.body.pseudo}, '+super**Secret!', {
+            expiresIn: '24h' // expires in 24 hours
+        });
+
+        res.status(200).send({token: token});
+    } else {
+        console.log("DON T EXIST");
+        res.status(401).send({ error: "Unauthorized :(" });
+    }
+}) ;
 
 router.get('/getTestDatas', function(req, res){
     console.log('Returning test datas');
