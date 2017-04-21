@@ -89,7 +89,7 @@ app.post('/authentificate', function(req, res) {
     var tables = [];
     tables.push(new Table('user_data', 'pseudo'));
     var _pgdao = new pgDAO(tables);
-
+    // Define what to do with the result
     var resultCallback = function(resSQL){
 
         var existInSql = false;
@@ -112,10 +112,29 @@ app.post('/authentificate', function(req, res) {
             res.status(401).send({ error: "Unauthorized :(" });
         }
     }
-
+    // Call the count function
     _pgdao.count({'pseudo': req.body.pseudo, 'mdp': req.body.mdp}, resultCallback);
 
 }) ;
+
+router.post('/grandLyonDataAddFeature', function (req, res) {
+    console.log('Adding a new center of interest');
+    var c_of_i = require('./centerOfInterest.js');
+    var grandLyonData = req.body;
+    // Formatting grand Lyon data
+    var _params = c_of_i.formatGLFeature(grandLyonData);
+    console.log(_params);
+    // Insert the object to the data base
+    var _pgdao = new pgDAO([new Table('centers_of_interest', 'id')]);
+
+    // Define the result callback function
+    var resultCallback = function(){
+        console.log('INSERE !');
+        res.status(200).send();
+    };
+
+    _pgdao.insert(_params, resultCallback);
+});
 
 router.get('/getTestDatas', function(req, res){
     console.log('Returning test datas');
