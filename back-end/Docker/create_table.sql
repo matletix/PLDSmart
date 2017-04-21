@@ -20,7 +20,7 @@ CREATE TABLE "centers_of_interest"(
     adresse VARCHAR(255) NOT NULL,
     codepostal INT NOT NULL,
     commune VARCHAR(255) NOT NULL,
-    telephone INT,
+    telephone VARCHAR(255),
     email VARCHAR(255),
     siteweb VARCHAR(255),
     ouverture VARCHAR(255),

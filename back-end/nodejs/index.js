@@ -10,6 +10,9 @@ var geoJson = require('geojson-tools');
 
 var pgDAO = require('./pgDAO.js');
 var Table = require('./Table.js');
+
+var rp = require('request-promise');
+
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -72,15 +75,8 @@ router.use(function(req, res, next) {
 
 // Just to test the user account creation
 app.get('/signuptest', function(req, res) {
-      // add a static user to the database
-      pool.query('SELECT PostGIS_full_version()', [], function(errSQL, resSQL) {
-        if(errSQL) {
-          return console.error('error running query', errSQL);
-        }
 
-        res.json({row: resSQL.rows[0]});
-        console.log('row:', resSQL.rows[0]);
-      });
+
 });
 
 app.post('/authentificate', function(req, res) {
@@ -117,23 +113,81 @@ app.post('/authentificate', function(req, res) {
 
 }) ;
 
-router.post('/grandLyonDataAddFeature', function (req, res) {
-    console.log('Adding a new center of interest');
-    var c_of_i = require('./centerOfInterest.js');
-    var grandLyonData = req.body;
-    // Formatting grand Lyon data
-    var _params = c_of_i.formatGLFeature(grandLyonData);
-    console.log(_params);
-    // Insert the object to the data base
-    var _pgdao = new pgDAO([new Table('centers_of_interest', 'id')]);
 
-    // Define the result callback function
-    var resultCallback = function(){
-        console.log('INSERE !');
-        res.status(200).send();
+// End point to add getting one Feature to insert into the database
+router.post('/grandLyonDataAddOneFeature', function (req, res) {
+    var grandLyonData = req.body;
+    console.log('Adding a new center of interest');
+    var _pgdao = new pgDAO([new Table('centers_of_interest', 'id')]);
+    var c_of_i = require('./centerOfInterest.js');
+
+    if(grandLyonData['properties']['type'] == 'PATRIMOINE_CULTUREL'){
+        // Formatting grand Lyon data
+        var _params = c_of_i.formatGLFeature(grandLyonData);
+        console.log(_params);
+        // Insert the object to the data base
+        // Define the result callback function
+        var resultCallback = function(){
+            console.log('INSERE !');
+            res.status(200).send();
+        };
+
+        _pgdao.insert(_params, resultCallback);
+    }
+});
+
+// Function that requests the GRAND LYON API
+var grandLyonRequest = function (uri, resFct, errFct) {
+    console.log('Grand Lyon request');
+    var options = {
+        uri: uri,
+        qs: {},
+        headers: {
+            'User-Agent': 'Request-Promise'
+        },
+        json: true // Automatically parses the JSON string in the response
+    };
+    rp(options)
+        .then(resFct)
+        .catch(errFct);
+};
+
+// End point requesting grand Lyon to get all the features
+// Inserts the ones of type "PATRIMOINE_CULTUREL"
+router.post('/grandLyonDataAddFeatures', function (req, res) {
+
+    var error = function (err) {
+        console.log('ERROR !', err);
+        res.status(500).send();
     };
 
-    _pgdao.insert(_params, resultCallback);
+    var add_CofI_db = function (result) {
+        console.log('RESULT GRAND LYON : ', result);
+        console.log('Adding a new center of interest');
+        var _pgdao = new pgDAO([new Table('centers_of_interest', 'id')]);
+        var c_of_i = require('./centerOfInterest.js');
+
+        for(let grandLyonData of result['features']){
+            if(grandLyonData['properties']['type'] == 'PATRIMOINE_CULTUREL'){
+                // Formatting grand Lyon data
+                var _params = c_of_i.formatGLFeature(grandLyonData);
+                console.log(_params);
+                // Insert the object to the data base
+                // Define the result callback function
+                var resultCallback = function(){
+                    console.log('INSERE !');
+                    res.status(200).send();
+                };
+
+                _pgdao.insert(_params, resultCallback);
+            }
+        }
+
+    };
+    var uri = 'https://download.data.grandlyon.com/wfs/rdata?SERVICE=WFS&VERSION=2.0.0&outputformat=GEOJSON&maxfeatures=30&request=GetFeature&typename=sit_sitra.sittourisme&SRSNAME=urn:ogc:def:crs:EPSG::4171';
+
+    grandLyonRequest(uri, add_CofI_db, error);
+
 });
 
 router.get('/getTestDatas', function(req, res){
