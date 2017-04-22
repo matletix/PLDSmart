@@ -37,22 +37,22 @@ CREATE UNIQUE INDEX centers_of_interest_id_uindex ON "centers_of_interest" (id);
 
 DROP TABLE IF EXISTS "course";
 CREATE TABLE "course"(
-    id_level INT NOT NULL,
+    level INT NOT NULL,
     id_course INT NOT NULL,
     theme VARCHAR(255),
     story_course TEXT,
-    CONSTRAINT PK_parcours PRIMARY KEY (id_level, id_course)
+    CONSTRAINT PK_parcours PRIMARY KEY (level, id_course)
 );
-CREATE UNIQUE INDEX parcours_id_level_parcours_index ON course(id_level, id_course);
+CREATE UNIQUE INDEX parcours_level_parcours_index ON course(level, id_course);
 
 DROP TABLE IF EXISTS "course_ci";
 CREATE TABLE "course_ci"(
     id_ci INT NOT NULL PRIMARY KEY ,
-    id_level INT NOT NULL ,
+    level INT NOT NULL ,
     id_course INT NOT NULL ,
     qr_code TEXT NOT NULL ,
     story_ci TEXT NOT NULL,
     ordre INT NOT NULL,
-    FOREIGN KEY (id_level, id_course) REFERENCES course(id_level, id_course)
+    FOREIGN KEY (level, id_course) REFERENCES course(level, id_course)
 );
 CREATE UNIQUE INDEX course_ci_id_ci ON course_ci(id_ci);

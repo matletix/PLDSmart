@@ -7,10 +7,10 @@ INSERT INTO public.course (id_level, id_course, theme, story_course) VALUES (1, 
 INSERT INTO public.course (id_level, id_course, theme, story_course) VALUES (1, 2, 'lvl1:2', 'lorem');
 INSERT INTO public.course (id_level, id_course, theme, story_course) VALUES (2, 3, 'lvl2:1', 'ipsum');
 
-INSERT INTO public.course_ci (id_ci, id_level, id_course, qr_code, story_ci, ordre) VALUES (2996254, 1, 1, 'coucou', 'debut', 1);
-INSERT INTO public.course_ci (id_ci, id_level, id_course, qr_code, story_ci, ordre) VALUES (132234, 1, 2, '1:2', 'st1:2', 1);
-INSERT INTO public.course_ci (id_ci, id_level, id_course, qr_code, story_ci, ordre) VALUES (132328, 1, 1, 'bonjour', 'suite', 2);
-INSERT INTO public.course_ci (id_ci, id_level, id_course, qr_code, story_ci, ordre) VALUES (163819, 1, 1, 'salut', 'fin', 3);
-INSERT INTO public.course_ci (id_ci, id_level, id_course, qr_code, story_ci, ordre) VALUES (193987, 1, 2, '1:2', 'st1:2', 2);
+INSERT INTO public.course_ci (id_ci, level, id_course, qr_code, story_ci, ordre) VALUES (2996254, 1, 1, 'coucou', 'debut', 1);
+INSERT INTO public.course_ci (id_ci, level, id_course, qr_code, story_ci, ordre) VALUES (132234, 1, 2, '1:2', 'st1:2', 1);
+INSERT INTO public.course_ci (id_ci, level, id_course, qr_code, story_ci, ordre) VALUES (132328, 1, 1, 'bonjour', 'suite', 2);
+INSERT INTO public.course_ci (id_ci, level, id_course, qr_code, story_ci, ordre) VALUES (163819, 1, 1, 'salut', 'fin', 3);
+INSERT INTO public.course_ci (id_ci, level, id_course, qr_code, story_ci, ordre) VALUES (193987, 1, 2, '1:2', 'st1:2', 2);
 
 
