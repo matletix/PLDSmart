@@ -52,6 +52,7 @@ CREATE TABLE "course_ci"(
     id_course INT NOT NULL ,
     qr_code TEXT NOT NULL ,
     story_ci TEXT NOT NULL,
+    ordre INT NOT NULL,
     FOREIGN KEY (id_level, id_course) REFERENCES course(id_level, id_course)
 );
 CREATE UNIQUE INDEX course_ci_id_ci ON course_ci(id_ci);

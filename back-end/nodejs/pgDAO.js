@@ -78,7 +78,7 @@ pgDAO.prototype.buildQuery = function (_params){
 
 };
 
-pgDAO.prototype.findOne = function(_params, resultCallback, errorCallback){
+pgDAO.prototype.findAll = function(_params, resultCallback, errorCallback){
     // Build the query
     var query = this.buildQuery(_params);
     query = 'SELECT * FROM ' + query;
@@ -117,7 +117,7 @@ pgDAO.prototype.buildInsertQuery = function (_params) {
     var query = 'INSERT INTO ' + this._tables[0].getName() + '(' + columns + ') VALUES (' + values + ')';
     console.log('INSERT query: ', query);
     return query;
-}
+};
 
 pgDAO.prototype.insert = function (_params,resultCallback, errorCallback) {
     // Build the query
@@ -127,6 +127,7 @@ pgDAO.prototype.insert = function (_params,resultCallback, errorCallback) {
 };
 
 pgDAO.prototype.executeQuery = function (query, _params,resultCallback, errorCallback) {
+    console.log('executing : ' + query);
     pool.query(query, [], function(errSQL, resSQL){
 
         if(errSQL) {
@@ -136,4 +137,4 @@ pgDAO.prototype.executeQuery = function (query, _params,resultCallback, errorCal
         resultCallback(resSQL);
 
     });
-}
+};

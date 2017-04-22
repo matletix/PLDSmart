@@ -21,6 +21,7 @@ module.exports.template =  {
         "geojson": {}
     }
 };
+
 module.exports.formatGLFeature = function (glFeature) {
     var _params = this.template;
     for(let property in _params){

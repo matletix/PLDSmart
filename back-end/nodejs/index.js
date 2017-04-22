@@ -121,7 +121,7 @@ router.post('/grandLyonDataAddOneFeature', function (req, res) {
     var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
     var c_of_i = require('./centerOfInterest.js');
 
-    if(grandLyonData['properties']['type'] == 'PATRIMOINE_CULTUREL'){
+    if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
         // Formatting grand Lyon data
         var _params = c_of_i.formatGLFeature(grandLyonData);
         console.log(_params);
@@ -168,7 +168,7 @@ router.post('/grandLyonDataAddFeatures', function (req, res) {
         var c_of_i = require('./centerOfInterest.js');
 
         for(let grandLyonData of result['features']){
-            if(grandLyonData['properties']['type'] == 'PATRIMOINE_CULTUREL'){
+            if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
                 // Formatting grand Lyon data
                 var _params = c_of_i.formatGLFeature(grandLyonData);
                 console.log(_params);
@@ -203,7 +203,7 @@ router.post('/allCentersOfInterest', function (req, res) {
 
     var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
 
-    _pgdao.findOne({}, function (result) {
+    _pgdao.findAll({}, function (result) {
         console.log('Result sent !');
         res.status(200).send(result);
     });
@@ -217,15 +217,28 @@ router.post('/addCourse', function () {
 
 router.get('/getTestDatas', function(req, res){
     console.log('Returning test datas');
-    var array = [
-        [45.76263,4.823473], //Fourvière
-        [45.731135,4.81806], //Confluences
-        [45.753226,4.831275] //musee des arts decoratifs
+    const array = [
+        [45.76263, 4.823473], //Fourvière
+        [45.731135, 4.81806], //Confluences
+        [45.753226, 4.831275] //musee des arts decoratifs
     ];
 
     res.json(geoJson.toGeoJSON(array, 'multipoint'));
 });
 
+router.get('/getParcours', function(req, res){
+    const _pgdao = new pgDAO([new Table('course_ci')]);
+    _pgdao.findAll({}, function(result) {
+        for (obj in result.rows){
+            console.log(result.rows[obj].story_ci);
+        }
+        //console.log(result)
+    });
+
+    res.send('done');
+
+
+});
 
 
 // REGISTER OUR ROUTES -------------------------------
