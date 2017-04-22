@@ -1,4 +1,4 @@
 import { AppRegistry } from 'react-native';
-import LoginScreen from './src/screens/LoginScreen';
+import App from './src/index';
 
-AppRegistry.registerComponent('FeliCity', () => LoginScreen);
+AppRegistry.registerComponent('FeliCity', () => App);

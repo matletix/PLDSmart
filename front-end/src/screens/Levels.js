@@ -7,7 +7,11 @@ import { List,
 	 ListItem
        } from 'react-native-elements';
 
-class LevelScreen extends Component {
+class Levels extends Component {
+  static navigationOptions = {
+    title: 'Niveaux',
+  }
+
   constructor(props) {
     super(props);
     this.state = {currentLevel: 2, listItems: [
@@ -29,6 +33,10 @@ class LevelScreen extends Component {
     ]}
   }
   
+  onLevelPress = () => {
+    this.props.navigation.navigate('Courses');
+  };
+  
   render() {
     return (
 	<View style={styles.container}>
@@ -45,6 +53,7 @@ class LevelScreen extends Component {
 	        containerStyle={locked ? styles.listItemLocked : styles.listItemUnlocked}
 		chevronColor='#ffa000'
 		hideChevron = {locked}
+                onPress = {locked ? null : () => this.onLevelPress()}
 		/>
 	    )})
 	}
@@ -89,4 +98,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default LevelScreen;
+export default Levels;

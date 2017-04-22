@@ -9,29 +9,15 @@ import { Button,
        } from 'react-native-elements';
 
 
-class LoginScreen extends Component {
-  render() {
+class Logout extends Component {
+  render () {
     return (
-	<View style={styles.container}>
-	    <View style={styles.logoContainer}>
-		<Image
-		    style={styles.logo}
-		    source={require('../img/logo.png')}/>
-		<Text style={styles.textLogo}>FeliCity</Text>
-	    </View>
-	    <View style={styles.formContainer}>
-		<TextInput style={styles.input} placeholder="Email" />
-		<TextInput style={styles.input} placeholder="Mot de passe" secureTextEntry={true} />
-		<View style={styles.buttonContainer}>
-		    <Button buttonStyle={styles.button} title="Se connecter" />
-		    <Button buttonStyle={styles.button} title="S'enregistrer" />
-		</View>
-	    </View>
-	</View>
+      <View style={styles.container}>
+
+      </View>
     )
   }
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -75,5 +61,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
-export default LoginScreen;
+export default Logout;

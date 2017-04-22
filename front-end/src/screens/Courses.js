@@ -12,7 +12,10 @@ import { Button,
        } from 'react-native-elements';
 
 
-class CoursesScreen extends Component {
+class Courses extends Component {
+  static navigationOptions = {
+    title: 'Parcours',
+  }
   constructor(props) {
     super(props);
     this.state = {listItems: [
@@ -103,4 +106,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default CoursesScreen;
+export default Courses;

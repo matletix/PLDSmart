@@ -8,7 +8,11 @@ import { List,
        } from 'react-native-elements';
 
 
-class GameModeScreen extends Component {
+class GameModes extends Component {
+  static navigationOptions = {
+    title: 'Mode de jeu',
+  }
+
   constructor(props) {
     super(props);
     this.state = {listItems: [
@@ -23,6 +27,10 @@ class GameModeScreen extends Component {
     ]}
   }
   
+  onModePress = () => {
+    this.props.navigation.navigate('Levels');
+  };
+
   render() {
     return (
 	<View style={styles.container}>
@@ -36,6 +44,7 @@ class GameModeScreen extends Component {
 		    leftIcon={{name: item.icon, color: '#ffa000'}}
 		    containerStyle={styles.listItem}
 		    chevronColor='#ffa000'
+         	    onPress = {() => this.onModePress()}
 		    />
 		))
 		}
@@ -67,4 +76,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default GameModeScreen;
+export default GameModes;
