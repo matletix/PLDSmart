@@ -28,9 +28,9 @@ CREATE TABLE "centers_of_interest"(
     tarifsenclair VARCHAR(255),
     tarifsmin INT,
     tarifsmax INT,
-    date_creation TIME NOT NULL,
-    last_update TIME NOT NULL,
-    last_update_fme TIME NOT NULL,
+    date_creation TIMESTAMP NOT NULL,
+    last_update TIMESTAMP NOT NULL,
+    last_update_fme TIMESTAMP NOT NULL,
     coordinates GEOGRAPHY(POINT) NOT NULL
 );
 CREATE UNIQUE INDEX centers_of_interest_id_uindex ON "centers_of_interest" (id);

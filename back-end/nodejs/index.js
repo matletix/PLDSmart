@@ -164,7 +164,7 @@ router.post('/grandLyonDataAddFeatures', function (req, res) {
     var add_CofI_db = function (result) {
         console.log('RESULT GRAND LYON : ', result);
         console.log('Adding a new center of interest');
-        var _pgdao = new pgDAO([new Table('centers_of_interest', 'id')]);
+        var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
         var c_of_i = require('./centerOfInterest.js');
 
         for(let grandLyonData of result['features']){
@@ -198,10 +198,22 @@ router.post('/grandLyonDataAddFeatures', function (req, res) {
 
 });
 
+// Return all the stored centers of interest
+router.post('/allCentersOfInterest', function (req, res) {
+
+    var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
+
+    _pgdao.findOne({}, function (result) {
+        console.log('Result sent !');
+        res.status(200).send(result);
+    });
+});
+
 // Add a new course
 router.post('/addCourse', function () {
 
 });
+
 
 router.get('/getTestDatas', function(req, res){
     console.log('Returning test datas');
