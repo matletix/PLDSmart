@@ -299,7 +299,7 @@ router.get('/getTestDatas', function(req, res){
 });
 
 router.get('/getParcours', function(req, res){
-    const _pgdao = new pgDAO([new Table('course_ci')]);
+    const _pgdao = new pgDAO([new Table('course_coi')]);
     _pgdao.findAll({}, function(result) {
         for (obj in result.rows){
             console.log(result.rows[obj].description);
