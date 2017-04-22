@@ -10,6 +10,7 @@ var geoJson = require('geojson-tools');
 
 var pgDAO = require('./pgDAO.js');
 var Table = require('./Table.js');
+var lib = require('./lib.js');
 
 var rp = require('request-promise');
 
@@ -119,11 +120,10 @@ router.post('/grandLyonDataAddOneFeature', function (req, res) {
     var grandLyonData = req.body;
     console.log('Adding a new center of interest');
     var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
-    var c_of_i = require('./centerOfInterest.js');
 
     if(grandLyonData['properties']['type'] == 'PATRIMOINE_CULTUREL'){
         // Formatting grand Lyon data
-        var _params = c_of_i.formatGLFeature(grandLyonData);
+        var _params = lib.formatgl(grandLyonData, lib.template);
         console.log(_params);
         // Insert the object to the data base
         // Define the result callback function
@@ -165,12 +165,10 @@ router.post('/grandLyonDataAddFeatures', function (req, res) {
         console.log('RESULT GRAND LYON : ', result);
         console.log('Adding a new center of interest');
         var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
-        var c_of_i = require('./centerOfInterest.js');
-
         for(let grandLyonData of result['features']){
             if(grandLyonData['properties']['type'] == 'PATRIMOINE_CULTUREL'){
                 // Formatting grand Lyon data
-                var _params = c_of_i.formatGLFeature(grandLyonData);
+                var _params = lib.formatgl(grandLyonData, lib.template);
                 console.log(_params);
                 // Insert the object to the data base
                 // Define the result callback function
@@ -205,15 +203,89 @@ router.post('/allCentersOfInterest', function (req, res) {
 
     _pgdao.findOne({}, function (result) {
         console.log('Result sent !');
-        res.status(200).send(result);
+        res.status(200).send(result['rows']);
+    }, function (err) {
+        console.log('Erreur Centres d\'intérêts!');
+        res.status(500).send();
     });
 });
 
+
 // Add a new course
-router.post('/addCourse', function () {
+router.post('/addCourse', function (req, res) {
+
+    // Format the params
+    var _params = lib.format(req.body, lib.template_insert_course);
+    var _pgdao = new pgDAO([new Table('course', ['id_course', 'niveau'])]);
+
+
+    _pgdao.insert(_params, function () {
+        console.log('Parcours inséré!');
+        res.status(200).send();
+    }, function (err) {
+        console.log('Erreur, Parcours non inséré! ', err);
+        res.status(500).send();
+    });
+
+    var cois = req.body['cois'];
+    _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
+
+    // Add the cois to the database
+    for (let coi of cois){
+
+        _params = lib.format(coi, lib.template_insert_coi);
+
+        _pgdao.insert(_params, function () {
+            console.log('coi inséré!');
+            res.status(200).send();
+        }, function (err) {
+            console.log('Erreur, coi non inséré! ', err);
+            res.status(500).send();
+        });
+    }
 
 });
 
+// Add a coi to a course
+router.post('/add_COI_to_course', function (req, res) {
+
+    var _params = lib.format(req.body, lib.template_insert_coi);
+    var _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
+
+    _pgdao.insert(_params, function () {
+        console.log('coi inséré!');
+        res.status(200).send();
+    }, function (err) {
+        console.log('Erreur, coi non inséré! ', err);
+        res.status(500).send();
+    });
+});
+
+router.post('/get_Course_coi_content', function (req, res) {
+    var _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
+
+    _pgdao.findOne({}, function (result) {
+        console.log('COIs : ', result["rows"]);
+        res.status(200).send(result["rows"]);
+    }, function (err) {
+        console.log('Erreur get courses ! ', err);
+        res.status(500).send();
+    });
+});
+
+router.post('/get_course_content', function(req, res){
+
+    var _pgdao = new pgDAO([new Table('course', ['id_course', 'niveau'])]);
+
+    _pgdao.findOne({}, function (result) {
+        console.log('Courses : ', result["rows"]);
+        res.status(200).send(result["rows"]);
+    }, function (err) {
+        console.log('Erreur get courses ! ', err);
+        res.status(500).send();
+    });
+
+});
 
 router.get('/getTestDatas', function(req, res){
     console.log('Returning test datas');

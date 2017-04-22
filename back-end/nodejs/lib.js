@@ -21,8 +21,8 @@ module.exports.template =  {
         "geojson": {}
     }
 };
-module.exports.formatGLFeature = function (glFeature) {
-    var _params = this.template;
+module.exports.formatgl = function (glFeature, _params) {
+
     for(let property in _params){
         if(property !== "coordinates"){
             _params[property] = glFeature["properties"][property];
@@ -32,4 +32,33 @@ module.exports.formatGLFeature = function (glFeature) {
     }
     console.log('GLFeature to params : ', _params);
     return _params;
+};
+
+module.exports.format = function (obj, _params) {
+
+    for(let property in _params){
+        if(property !== "coordinates"){
+            _params[property] = obj[property];
+        } else {
+            _params[property]["geojson"] = obj["geometry"];
+        }
+    }
+    console.log('obj to params : ', _params);
+    return _params;
+};
+
+module.exports.template_insert_coi = {
+    "id_course": "",
+    "level": "",
+    "id_coi": "",
+    "qr_code": "",
+    "description": "",
+    "position_in_course": ""
+};
+
+module.exports.template_insert_course = {
+    "id_course": "",
+    "level": "",
+    "theme": "",
+    "description": ""
 };
