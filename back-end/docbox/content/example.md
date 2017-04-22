@@ -40,49 +40,16 @@ Property | Description
 }
 ```
 
-### Get geoPoints
-
-Returns a set of 3 points, as a GeoJson Multipoint
-
-```endpoint
-GET /api/getTestDatas?token=MYTOKEN
-```
-
-#### Example request
-
-```curl
-$ curl http://localhost:8080/api/getTestDatas?token=MYTOKEN
-```
 
 
-#### Example response
+## Parcours
 
-```json
-{
-  "type": "MultiPoint",
-  "coordinates": [
-    [
-      4.823473,
-      45.76263
-    ],
-    [
-      4.81806,
-      45.731135
-    ],
-    [
-      4.831275,
-      45.753226
-    ]
-  ]
-}
-```
-
-### Get parcours
+### Get parcours : level
 
 With this endpoint, you can get every parcours which have a level <= as a specified one.
 
 ```endpoint
-POST http://localhost:8080/api/getParcoursLevel
+POST http://localhost:8080/api/getParcours/Level
 ```
 
 #### Example request
@@ -130,6 +97,47 @@ Property | Description
   }
 ]
 ```
+
+## Tests
+
+### Get geoPoints
+
+Returns a set of 3 points, as a GeoJson Multipoint
+
+```endpoint
+GET /api/getTestDatas?token=MYTOKEN
+```
+
+#### Example request
+
+```curl
+$ curl http://localhost:8080/api/getTestDatas?token=MYTOKEN
+```
+
+
+#### Example response
+
+```json
+{
+  "type": "MultiPoint",
+  "coordinates": [
+    [
+      4.823473,
+      45.76263
+    ],
+    [
+      4.81806,
+      45.731135
+    ],
+    [
+      4.831275,
+      45.753226
+    ]
+  ]
+}
+```
+
+## Others
 
 ### Retrieve a wobble
 

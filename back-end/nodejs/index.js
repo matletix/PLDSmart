@@ -298,27 +298,26 @@ router.get('/getTestDatas', function(req, res){
     res.json(geoJson.toGeoJSON(array, 'multipoint'));
 });
 
-router.post('/getParcoursLevel', function(req, res){
+router.post('/getParcours/Level', function(req, res){
     const level = req.body.level;
     console.log("Asking for parcours with level <= " + req.body.level);
     const _pgdao = new pgDAO([new Table('course')]);
-    /*
-    _pgdao.findAll({}, function(result) {
-        for (obj in result.rows){
-            console.log(result.rows[obj].description);
-        }
-        */
-       // console.log(result)
-    //});
     _pgdao.getCoursesLevelInf(req.body, function(sqlResult){
         result = JSON.stringify(sqlResult.rows);
 
         console.log("sending back : " + result);
         res.send(result);
     });
+});
 
-
-
+router.post('/getParcours/Specific', function(req, res){
+    /*
+     SELECT * FROM course_coi c
+     JOIN centers_of_interest coi ON C.id_coi = coi.id
+     WHERE c.id_course = 1
+     ORDER BY  c.position_in_course;
+     */
+    res.send('under work');
 });
 
 
