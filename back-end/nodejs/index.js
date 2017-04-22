@@ -83,7 +83,7 @@ app.post('/authentificate', function(req, res) {
 
 
     var tables = [];
-    tables.push(new Table('user_data', 'pseudo'));
+    tables.push(new Table('user_data', ['pseudo']));
     var _pgdao = new pgDAO(tables);
     // Define what to do with the result
     var resultCallback = function(resSQL){
@@ -118,7 +118,7 @@ app.post('/authentificate', function(req, res) {
 router.post('/grandLyonDataAddOneFeature', function (req, res) {
     var grandLyonData = req.body;
     console.log('Adding a new center of interest');
-    var _pgdao = new pgDAO([new Table('centers_of_interest', 'id')]);
+    var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
     var c_of_i = require('./centerOfInterest.js');
 
     if(grandLyonData['properties']['type'] == 'PATRIMOINE_CULTUREL'){
@@ -137,11 +137,11 @@ router.post('/grandLyonDataAddOneFeature', function (req, res) {
 });
 
 // Function that requests the GRAND LYON API
-var grandLyonRequest = function (uri, resFct, errFct) {
+var grandLyonRequest = function (uri, qs, resFct, errFct) {
     console.log('Grand Lyon request');
     var options = {
         uri: uri,
-        qs: {},
+        qs: qs,
         headers: {
             'User-Agent': 'Request-Promise'
         },
@@ -184,9 +184,22 @@ router.post('/grandLyonDataAddFeatures', function (req, res) {
         }
 
     };
-    var uri = 'https://download.data.grandlyon.com/wfs/rdata?SERVICE=WFS&VERSION=2.0.0&outputformat=GEOJSON&maxfeatures=30&request=GetFeature&typename=sit_sitra.sittourisme&SRSNAME=urn:ogc:def:crs:EPSG::4171';
+    var uri = 'https://download.data.grandlyon.com/wfs/rdata';
+    var qs = {
+        "SERVICE": "WFS",
+        "VERSION": "2.0.0",
+        "outputformat": "GEOJSON",
+        "maxfeatures": "3000",
+        "request": "GetFeature",
+        "typename": "sit_sitra.sittourisme",
+        "SRSNAME": "urn:ogc:def:crs:EPSG::4171"
+    };
+    grandLyonRequest(uri, qs, add_CofI_db, error);
 
-    grandLyonRequest(uri, add_CofI_db, error);
+});
+
+// Add a new course
+router.post('/addCourse', function () {
 
 });
 

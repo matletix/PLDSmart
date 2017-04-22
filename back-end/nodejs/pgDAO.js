@@ -25,7 +25,23 @@ pgDAO.prototype.buildQuery = function (_params){
         console.log('Tables ! ' + tab.length);
         if (index < tab.length - 1) {
             tables += ', ';
-            keys += array[index].getKey() + ' = ' + array[index+1].getKey();
+            var i = 0;
+
+            var n1 = array[index].getName();
+            var n2 = array[index+1].getName();
+
+            var keytab2 = array[index+1].getKey();
+            var keytab1 = array[index].getKey();
+
+            for(let k1 of keytab1){
+
+                keys += n1 +'.'+ k1 + ' = ' + n2 +'.'+ keytab2[i];
+                if (i < keytab1.length - 2){
+                    keys += ' AND ';
+                }
+                i++;
+            }
+
             if (index < tab.length - 2){
                 keys += ' AND ';
             }
