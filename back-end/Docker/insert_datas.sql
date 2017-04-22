@@ -12,5 +12,3 @@ INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, p
 INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (132328, 1, 1, 'bonjour', 'suite', 2);
 INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (163819, 1, 1, 'salut', 'fin', 3);
 INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (193987, 1, 2, '1:2', 'st1:2', 2);
-
-
