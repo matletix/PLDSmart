@@ -21,8 +21,8 @@ module.exports.template =  {
         "geojson": {}
     }
 };
-module.exports.formatgl = function (glFeature, _params) {
 
+module.exports.formatgl = function (glFeature, _params) {
     for(let property in _params){
         if(property !== "coordinates"){
             _params[property] = glFeature["properties"][property];

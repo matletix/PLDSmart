@@ -121,7 +121,7 @@ router.post('/grandLyonDataAddOneFeature', function (req, res) {
     console.log('Adding a new center of interest');
     var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
 
-    if(grandLyonData['properties']['type'] == 'PATRIMOINE_CULTUREL'){
+    if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
         // Formatting grand Lyon data
         var _params = lib.formatgl(grandLyonData, lib.template);
         console.log(_params);
@@ -166,7 +166,7 @@ router.post('/grandLyonDataAddFeatures', function (req, res) {
         console.log('Adding a new center of interest');
         var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
         for(let grandLyonData of result['features']){
-            if(grandLyonData['properties']['type'] == 'PATRIMOINE_CULTUREL'){
+            if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
                 // Formatting grand Lyon data
                 var _params = lib.formatgl(grandLyonData, lib.template);
                 console.log(_params);
@@ -201,7 +201,7 @@ router.post('/allCentersOfInterest', function (req, res) {
 
     var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
 
-    _pgdao.findOne({}, function (result) {
+    _pgdao.findAll({}, function (result) {
         console.log('Result sent !');
         res.status(200).send(result['rows']);
     }, function (err) {
@@ -264,7 +264,7 @@ router.post('/add_COI_to_course', function (req, res) {
 router.post('/get_Course_coi_content', function (req, res) {
     var _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
 
-    _pgdao.findOne({}, function (result) {
+    _pgdao.findAll({}, function (result) {
         console.log('COIs : ', result["rows"]);
         res.status(200).send(result["rows"]);
     }, function (err) {
@@ -277,7 +277,7 @@ router.post('/get_course_content', function(req, res){
 
     var _pgdao = new pgDAO([new Table('course', ['id_course', 'niveau'])]);
 
-    _pgdao.findOne({}, function (result) {
+    _pgdao.findAll({}, function (result) {
         console.log('Courses : ', result["rows"]);
         res.status(200).send(result["rows"]);
     }, function (err) {
@@ -289,15 +289,28 @@ router.post('/get_course_content', function(req, res){
 
 router.get('/getTestDatas', function(req, res){
     console.log('Returning test datas');
-    var array = [
-        [45.76263,4.823473], //Fourvière
-        [45.731135,4.81806], //Confluences
-        [45.753226,4.831275] //musee des arts decoratifs
+    const array = [
+        [45.76263, 4.823473], //Fourvière
+        [45.731135, 4.81806], //Confluences
+        [45.753226, 4.831275] //musee des arts decoratifs
     ];
 
     res.json(geoJson.toGeoJSON(array, 'multipoint'));
 });
 
+router.get('/getParcours', function(req, res){
+    const _pgdao = new pgDAO([new Table('course_ci')]);
+    _pgdao.findAll({}, function(result) {
+        for (obj in result.rows){
+            console.log(result.rows[obj].description);
+        }
+        //console.log(result)
+    });
+
+    res.send('done');
+
+
+});
 
 
 // REGISTER OUR ROUTES -------------------------------

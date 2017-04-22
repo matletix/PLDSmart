@@ -1,4 +1,4 @@
-const pg = require('pg')
+const pg = require('pg');
 
 // create a config to configure both pooling behavior
 // and client options
@@ -27,7 +27,7 @@ pool.on('error', function (err, client) {
   // between your application and the database, the database restarts, etc.
   // and so you might want to handle it and at least log it out
   console.error('idle client error', err.message, err.stack)
-})
+});
 
 //export the query method for passing queries to the pool
 module.exports.query = function (text, values, callback) {
