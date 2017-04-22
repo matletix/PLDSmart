@@ -37,22 +37,24 @@ CREATE UNIQUE INDEX centers_of_interest_id_uindex ON "centers_of_interest" (id);
 
 DROP TABLE IF EXISTS "course";
 CREATE TABLE "course"(
-    level INT NOT NULL,
     id_course INT NOT NULL,
+    level INT NOT NULL,
     theme VARCHAR(255),
-    story_course TEXT,
-    CONSTRAINT PK_parcours PRIMARY KEY (level, id_course)
+    description TEXT,
+    CONSTRAINT PK_course_level PRIMARY KEY (id_course, level)
 );
-CREATE UNIQUE INDEX parcours_level_parcours_index ON course(level, id_course);
+CREATE UNIQUE INDEX course_id_index ON course(id_course, level);
 
-DROP TABLE IF EXISTS "course_ci";
-CREATE TABLE "course_ci"(
-    id_ci INT NOT NULL PRIMARY KEY ,
-    level INT NOT NULL ,
+DROP TABLE IF EXISTS "course_coi";
+CREATE TABLE "course_coi"(
     id_course INT NOT NULL ,
+    level INT NOT NULL ,
+    id_coi INT NOT NULL ,
     qr_code TEXT NOT NULL ,
-    story_ci TEXT NOT NULL,
-    ordre INT NOT NULL,
-    FOREIGN KEY (level, id_course) REFERENCES course(level, id_course)
+    description TEXT NOT NULL,
+    position_in_course INT NOT NULL,
+    CONSTRAINT PK_course_coi PRIMARY KEY (id_course, level, id_coi),
+    FOREIGN KEY (id_course, level) REFERENCES course(id_course, level),
+    FOREIGN KEY (id_coi) REFERENCES centers_of_interest(id)
 );
-CREATE UNIQUE INDEX course_ci_id_ci ON course_ci(id_ci);
+CREATE UNIQUE INDEX course_coi_id_index ON course_coi(id_course, level, id_coi);
