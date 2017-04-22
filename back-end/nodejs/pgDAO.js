@@ -138,3 +138,18 @@ pgDAO.prototype.executeQuery = function (query, _params,resultCallback, errorCal
 
     });
 };
+
+pgDAO.prototype.getCoursesLevelInf = function(_params,resultCallback, errorCallback) {
+        console.log("Requesting parcours with level <= " + _params.level);
+        pool.query('SELECT * FROM course WHERE level <= $1::int', [_params.level],  function(errSQL, resSQL){
+
+            if(errSQL) {
+                if (errorCallback) errorCallback(errSQL);
+                return console.error('error running query', errSQL);
+            }
+            resultCallback(resSQL);
+
+        });
+    };
+
+
