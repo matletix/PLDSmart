@@ -152,4 +152,19 @@ pgDAO.prototype.getCoursesLevelInf = function(_params,resultCallback, errorCallb
         });
     };
 
+pgDAO.prototype.getCourseSpecific = function(_params, resultatCallback, errorCallback){
+    console.log("SQL - requesting parcours id : " + _params.id_course);
+    pool.query('     SELECT * FROM course_coi c JOIN centers_of_interest coi ON C.id_coi = coi.id \
+                    WHERE c.id_course = $1::int \
+                    ORDER BY  c.position_in_course;', [_params.id_course],  function(errSQL, resSQL){
+        //console.log(resSQL);
+        if(errSQL) {
+            if (errorCallback) errorCallback(errSQL);
+            return console.error('error running query', errSQL);
+        }
+        resultatCallback(resSQL);
+
+    });
+};
+
 

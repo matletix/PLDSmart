@@ -1,12 +1,15 @@
 // BASE SETUP
 // =============================================================================
-
+/*jshint esversion: 6 */
 // call the packages we need
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var geoJson = require('geojson-tools');
+var GeoJson = require('geojson');
+
+const OO_Coi = require('./OO_Coi.js');
 
 var pgDAO = require('./pgDAO.js');
 var Table = require('./Table.js');
@@ -321,7 +324,26 @@ router.post('/getParcours/Specific', function(req, res){
      WHERE c.id_course = 1
      ORDER BY  c.position_in_course;
      */
-    res.send('under work');
+    const id_course = req.body.id_course;
+    console.log("Asking for course id : " + id_course);
+
+    const _pgdao = new pgDAO();
+    _pgdao.getCourseSpecific(req.body, function(sqlResult){
+
+        var coi = new OO_Coi(8585, 'name', 1.5, 10.2);
+
+
+        res.json(coi.toMyGeoJson());
+
+        /*
+
+
+        result = JSON.stringify(sqlResult.rows); //todo : to geojson !! (featureCollection)
+
+        console.log("sending back : " + result);
+        res.send(result);
+        */
+    });
 });
 
 
