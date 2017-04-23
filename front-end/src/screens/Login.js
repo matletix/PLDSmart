@@ -1,12 +1,20 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { StyleSheet,
 	 View,
 	 Text,
 	 TextInput,
 	 Image,
-       } from 'react-native';
+       } from 'react-native'
 import { Button,
-       } from 'react-native-elements';
+       } from 'react-native-elements'
+import { connect } from 'react-redux'
+
+
+const mapStateToProps = (state) => ({
+  username: state.username,
+  password: state.password,
+  token: state.token,
+})
 
 
 class Login extends Component {
@@ -17,13 +25,32 @@ class Login extends Component {
   constructor (props) {
     super(props);
     this.state = {
-      username: '',
-      password: '',
+      loginInput: '',
+      mdpInput: '',
+      loading: false,
+      error: false,
     };
   }
     
-  onLoginPress = (login, password) => {
-    this.props.navigation.navigate('Home');
+  onLoginPress = async (login, password) => {
+      console.log('coucou'+password)
+    this.setState({...this.state, loading: true})
+    let data = new FormData();
+    try {
+      const response = await fetch('http://localhost:8080/authentification', {
+        method: "POST",
+	headers: {
+	    'Accept': 'application/json',
+	    'Content-Type': 'application/json',
+	},
+        body: JSON.stringify({pseudo: login, mdp: password})
+      })
+      const posts = await response.json()
+      this.setState({...this.state, loading:false, password: ''})
+      this.props.navigation.navigate('Home');
+    } catch (e) {
+      this.setState({...this.state, password: '', loading: false, error: true})
+    }
   };
 
   onSigninPress = () => {
@@ -41,13 +68,25 @@ class Login extends Component {
 		<Text style={styles.textLogo}>FeliCity</Text>
 	    </View>
 	    <View style={styles.formContainer}>
-		<TextInput style={styles.input} placeholder="Email" />
-		<TextInput style={styles.input} placeholder="Mot de passe" secureTextEntry={true} />
+	    <TextInput
+		style={styles.input}
+		placeholder="Email"
+		onChangeText={(text) => this.setState({...this.state, loginInput: text})}
+		value={this.state.loginInput}
+	    />
+	    <TextInput
+		style={styles.input}
+		placeholder="Mot de passe"
+		secureTextEntry={true}
+		onChangeText={(text) => this.setState({...this.state, mdpInput: text})}
+		value={this.state.mdpInput}
+	    />
 		<View style={styles.buttonContainer}>
 		    <Button
+      large
 			buttonStyle={styles.button}
 			title="Se connecter"
-			onPress={() => this.onLoginPress(this.state.username, this.state.password)} />
+			onPress={() => this.onLoginPress(this.state.loginInput, this.state.mdpInput)} />
 		    <Button
 			buttonStyle={styles.button}
 			title="S'enregistrer"
@@ -103,4 +142,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default Login;
+export default connect(mapStateToProps)(Login);

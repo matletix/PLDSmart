@@ -1,6 +1,6 @@
-console.log('test');
-import React, { Component } from 'react';
-import { Root } from './router';
+import React, { Component } from 'react'
+import { Root } from './router'
+
 
 class App extends Component {
   render() {
