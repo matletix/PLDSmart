@@ -171,38 +171,58 @@ pgDAO.prototype.getCourseSpecific = function (_params, resultatCallback, errorCa
 };
 
 //used to get a specific COI, and parse it to a custom obj (ie OO_COI)
-pgDAO.prototype.getCOI = function (_params, callback) {
+pgDAO.prototype.getCOI = function (id_coi) {
     /*
      SELECT ST_AsGeoJSON(coordinates), id, id_sitra1, type, type_detail, nom, adresse, codepostal, commune, telephone, email,
      siteweb, ouverture, tarifsenclair, tarifsmin, tarifsmax,date_creation, last_update, last_update_fme
      FROM centers_of_interest WHERE id = 1;
      */
-    const id_coi = _params.id_coi;
     console.log("SQL - requesting coi id : " + id_coi);
-    return pool.query('SELECT *, ST_AsGeoJSON(coordinates) FROM centers_of_interest \
+    return new Promise(function(resolve, reject) {
+        pool.query('SELECT *, ST_AsGeoJSON(coordinates) FROM centers_of_interest \
                     WHERE id = $1::int;', [id_coi], function (errSQL, resSQL) {
-        //console.log(resSQL);
-        if (errSQL) {
-            return console.error('error running query', errSQL);
-        }
-        console.log("return : " + resSQL);
-        callback(resSQL);
-    });
-    //return 1;
-};
+            //console.log(resSQL);
+            if (errSQL) {
+                return console.error('error running query', errSQL);
+            }
+            console.log("return : " + resSQL);
 
-pgDAO.prototype.createCOI = function (id) {
-    console.log('creating coi');
-    this.getCOI({"id_coi": id}, function(res) {
-        console.log("sql rows : " + util.inspect(res.rows[0], {showHidden: false, depth: null}));
-        var row = res.rows[0];
-        console.log(JSON.parse(row.st_asgeojson).coordinates);
-        var coi = new OO_Coi(row.id, row.id_sitra, row.type, row.type_detail, row.nom, row.adresse, row.codepostal,
-        row.commune, row.telephone, row.email, row.siteweb, row.ouverture, row.tarifsenclair, row.tarifsmin, row.tarifsmax,
-        row.date_creation, row.last_update, row.last_update_fme, JSON.parse(row.st_asgeojson).coordinates[1],
-            JSON.parse(row.st_asgeojson).coordinates[0]);
-        console.log(coi.toMyGeoJson());
-        return res;
+            //console.log("sql rows : " + util.inspect(res.rows[0], {showHidden: false, depth: null}));
+            var row = resSQL.rows[0];
+            //console.log(JSON.parse(row.st_asgeojson).coordinates);
+            var coi = new OO_Coi(row.id, row.id_sitra, row.type, row.type_detail, row.nom, row.adresse, row.codepostal,
+                row.commune, row.telephone, row.email, row.siteweb, row.ouverture, row.tarifsenclair, row.tarifsmin, row.tarifsmax,
+                row.date_creation, row.last_update, row.last_update_fme, JSON.parse(row.st_asgeojson).coordinates[1],
+                JSON.parse(row.st_asgeojson).coordinates[0]);
+            console.log(coi.toMyGeoJson());
+            resolve(coi);
+        });
+        //return 1;
+    })};
+
+
+pgDAO.prototype.buildParc = function(id, callback) {
+    var ajaxQueries = id.size;
+    console.log("calling " + ajaxQueries + " ajax queries");
+    console.log(id);
+
+    var promises = [];
+    for (var i in id) {
+        console.log(id[i]);
+        promises.push(this.getCOI(id[i]));
+    }
+    Promise.all(promises).then(function() {
+        console.log("RESULT : " + util.inspect(promises[0], {showHidden: false, depth: null}));
+        console.log("RESULT : " + util.inspect(promises[1], {showHidden: false, depth: null}));
+        // returned data is in arguments[0], arguments[1], ... arguments[n]
+        // you can process it here
+    }, function(err) {
+        // error occurred
     });
 
+/*
+    this.createCOI(id, function(res){
+        console.log("=====" + util.inspect(res, {showHidden: false, depth: null}));
+    })
+    */
 };

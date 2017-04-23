@@ -111,7 +111,7 @@ app.post('/authentificate', function(req, res) {
             console.log("DON T EXIST");
             res.status(401).send({ error: "Unauthorized :(" });
         }
-    }
+    };
     // Call the count function
     _pgdao.count({'pseudo': req.body.pseudo, 'mdp': req.body.mdp}, resultCallback);
 
@@ -337,11 +337,7 @@ router.post('/getParcours/Specific', function(req, res){
         var parc1 = new OO_Parcours(5, "parc5", "st5", 1, [coi]);
         parc1.addCoi(coi2);
 
-        _pgdao.getCOI({'id_coi':1}, function(sqlR){
-            console.log('------------------');
-            //console.log(sqlR.rows);
-        });
-        _pgdao.createCOI(1);
+        _pgdao.buildParc( [1, 2] );
         res.send(coi.toMyGeoJson());
 
         /*
