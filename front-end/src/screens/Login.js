@@ -8,6 +8,9 @@ import { StyleSheet,
 import { Button,
        } from 'react-native-elements'
 import { connect } from 'react-redux'
+import Logo from '../components/Logo'
+import LoginForm from '../components/LoginForm'
+import LoginFormError from '../components/LoginFormError'
 
 
 const mapStateToProps = (state) => ({
@@ -18,6 +21,7 @@ const mapStateToProps = (state) => ({
 
 
 class Login extends Component {
+
   static navigationOptions = {
     headerVisible: false,
   }
@@ -31,13 +35,40 @@ class Login extends Component {
       error: false,
     };
   }
-    
+
+  // Triggered when the login text field receives text input
+  onLoginInputChange = (text) => this.setState({...this.state, loginInput: text})
+
+  // Triggered when the mdp text field receives text input
+  onMdpInputChange = (text) => this.setState({...this.state, mdpInput: text})
+
+  // Triggered when clicking on the 'Continue' button after a login attempt fails
+  onContinuePress = () => {
+    this.setState({...this.state, error: false})
+    this.props.navigation.navigate('Home')
+  }
+  
+  // Trigger when clicking on the Login button
   onLoginPress = async (login, password) => {
-      console.log('coucou'+password)
     this.setState({...this.state, loading: true})
-    let data = new FormData();
     try {
-      const response = await fetch('http://localhost:8080/authentification', {
+      // FIXME: no response from the backend server
+      // ------------------------------------------
+      // The request is made (you can analyze the network on an android emulator
+      // by pressing Ctrl+M, choose toogle inspector, and open the tab Network)
+      // but the Node server doesn't seem to receive the request (no logs output
+      // on the server) while it does work with kivy
+      // ------------------------------------------
+
+      // Test 1 succeeds
+      const test1 = await fetch('http://www.google.com')
+      console.log('TEST 1 REUSSI')
+      // Test 2 however fails !
+      const test2 = await fetch('http://localhost:8080/getTestDatas')
+      console.log('TEST 2 REUSSI')
+
+      // ------------------------------------------
+      const response = await fetch('http://localhost:8080/authentificate', {
         method: "POST",
 	headers: {
 	    'Accept': 'application/json',
@@ -46,56 +77,67 @@ class Login extends Component {
         body: JSON.stringify({pseudo: login, mdp: password})
       })
       const posts = await response.json()
-      this.setState({...this.state, loading:false, password: ''})
+      this.setState({...this.state, loading:false, error: false, mdpInput: ''})
       this.props.navigation.navigate('Home');
-    } catch (e) {
-      this.setState({...this.state, password: '', loading: false, error: true})
-    }
-  };
 
+    } catch (e) {
+      console.log('Erreur!')
+      this.setState({...this.state, mdpInput: '', loading: false, error: true})
+    }
+  }
+
+  // Triggered when clicking on the Sign up button
   onSigninPress = () => {
-    this.props.navigation.navigate('Signin');
-  };
+    this.setState({...this.state, error: false, mdpInput: ''})
+    this.props.navigation.navigate('Signin')
+  }
 
 
   render() {
+    // Initial rendering
+    if (this.state.loading == false && this.state.error == false) {
     return (
 	<View style={styles.container}>
+	 <Logo />
+	  <LoginForm
+	    onLoginInputChange={this.onLoginInputChange}
+	    onMdpInputChange={this.onMdpInputChange}
+	    onLoginPress={this.onLoginPress}
+	    onSigninPress={this.onSigninPress}
+	    loginInput={this.state.loginInput}
+	    mdpInput={this.state.mdpInput}
+          />
+	</View>
+    )}
+    // Rendered when a Login attempt is in progress
+    else if (this.state.loading == true ) {
+     return (
+	<View style={styles.container}>
+	 <Logo />
 	    <View style={styles.logoContainer}>
 		<Image
-		    style={styles.logo}
-		    source={require('../img/logo.png')}/>
-		<Text style={styles.textLogo}>FeliCity</Text>
-	    </View>
-	    <View style={styles.formContainer}>
-	    <TextInput
-		style={styles.input}
-		placeholder="Email"
-		onChangeText={(text) => this.setState({...this.state, loginInput: text})}
-		value={this.state.loginInput}
-	    />
-	    <TextInput
-		style={styles.input}
-		placeholder="Mot de passe"
-		secureTextEntry={true}
-		onChangeText={(text) => this.setState({...this.state, mdpInput: text})}
-		value={this.state.mdpInput}
-	    />
-		<View style={styles.buttonContainer}>
-		    <Button
-      large
-			buttonStyle={styles.button}
-			title="Se connecter"
-			onPress={() => this.onLoginPress(this.state.loginInput, this.state.mdpInput)} />
-		    <Button
-			buttonStyle={styles.button}
-			title="S'enregistrer"
-			onPress={() => this.onSigninPress()} />
-		</View>
+		    style={styles.loading}
+		    source={require('../img/loading.gif')}/>
 	    </View>
 	</View>
-    )
-  }
+     )}
+    // Rendered when a Login attempt fails
+   else if (this.state.loading == false && this.state.error == true) {
+    return (
+	<View style={styles.container}>
+	  <Logo />
+	  <LoginFormError
+	    onLoginInputChange={this.onLoginInputChange}
+	    onMdpInputChange={this.onMdpInputChange}
+	    onLoginPress={this.onLoginPress}
+	    onSigninPress={this.onSigninPress}
+	    loginInput={this.state.loginInput}
+	    mdpInput={this.state.mdpInput}
+	    onContinuePress={this.onContinuePress}
+	  />
+	</View>
+    )}
+    }
 }
 
 
@@ -104,40 +146,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffd600',
   },
-  logo: {
-    width: 150,
-    height:150,
-  },
-  textLogo: {
-    color: '#f38f19',
-    opacity: 0.8,
-    fontSize: 38,
-    textAlign: 'center',
+  loading: {
+    width: 50,
+    height: 50,
   },
   logoContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-  },
-  formContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  input: {
-    marginBottom: 10,
-    marginHorizontal: 30,
-    paddingHorizontal: 10,
-    backgroundColor: 'rgba(255,255,255,0.4)',
-  },
-  buttonContainer: {
-    margin: 10,
-    paddingHorizontal: 20,
-  },
-  button: {
-    borderRadius: 50,
-    margin: 5,
-    marginHorizontal: 50,
-    backgroundColor: '#f35f19',
   },
 });
 
