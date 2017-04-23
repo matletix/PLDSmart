@@ -40,9 +40,182 @@ Property | Description
 }
 ```
 
+## Centers of interest
+
+### Add one Grand Lyon geoJson feature
+With this endpoint, you can add to the database one single geoJson Feature, taken from the Grand Lyon API geoJson response.
+
+```endpoint
+POST http://localhost:8080/api/grandLyonDataAddOneFeature
+```
+
+#### Example request
+
+```curl
+curl -X POST --data {"token": "token value", "type":"Feature", "properties":{ "id":"92765", "id_sitra1":"sitraPCU653938", "type":"PATRIMOINE_CULTUREL", "type_detail":"Détails", "nom":"Nom du centre d'intérêt", "adresse":"adresse du centre d'intérêt", "codepostal":"69660", "commune":"Nom de la commune", "telephone":"0470220212", "fax":"0480220212", "telephonefax":"0480220219", "email":"email@email.com", "siteweb":"http:\/\/www.site.fr", "facebook":"", "classement":"", "ouverture":"", "tarifsenclair":"entre 5 et 15 euros", "tarifsmin":"5", "tarifsmax":"15", "producteur":"Lyon Tourisme et Congrès", "gid":"284", "date_creation":"2011-03-11 15:05:18", "last_update":"2016-04-20 06:22:11", "last_update_fme":"2017-03-16 00:15:34" }, "geometry":{ "type":"Point", "coordinates":[ 4.834414, 45.82862 ] } } https://localhost:8080/api/grandLyonDataAddOneFeature
+```
+
+
+#### Example request body
+
+```json
+{
+    "token": "value of the token",
+	"type":"Feature",
+	"properties":{
+		"id":"92765",
+		"id_sitra1":"sitraPCU653938",
+		"type":"PATRIMOINE_CULTUREL",
+		"type_detail":"",
+		"nom":"Nom du centre d'intérêt",
+		"adresse":"20 Avenue adresse",
+		"codepostal":"69660",
+		"commune":"Commune",
+		"telephone":"0478221212",
+		"fax":"0478229212",
+		"telephonefax":"0458221212",
+		"email":"email@email.com",
+		"siteweb":"http:\/\/www.siteweb.fr",
+		"facebook":"",
+		"classement":"",
+		"ouverture":"De 8H00 à 18H00",
+		"tarifsenclair":"De 5 à 25 Euros",
+		"tarifsmin":"5",
+		"tarifsmax":"25",
+		"producteur":"Lyon Tourisme et Congrès",
+		"gid":"284",
+		"date_creation":"2011-03-11 15:05:18",
+		"last_update":"2016-04-20 06:22:11",
+		"last_update_fme":"2017-03-16 00:15:34"
+	},
+    "geometry":{
+        "type":"Point",
+        "coordinates":[
+           4.834414,
+           45.82862
+        ]
+     }
+}
+```
+
+
+#### Example response
+
+```json
+
+```
+
+### Add to the database the Grand Lyon data
+This endpoint requests the Grand Lyon API to get information about the cultural centers of interest, and stores them into the database.
+
+```endpoint
+POST http://localhost:8080/api/grandLyonDataAddFeatures
+```
+
+#### Example request
+
+```curl
+curl -X POST --data { "token": "token value" } https://localhost:8080/api/grandLyonDataAddFeatures
+```
+
+
+#### Example request body
+
+```json
+{
+    "token": "value of the token"
+}
+```
+
+
+#### Example response
+
+```json
+
+```
 
 
 ## Parcours
+
+### Add a new course
+This endpoint allows you to add a new course.
+
+```endpoint
+POST http://localhost:8080/api/addCourse
+```
+
+#### Example request
+
+```curl
+curl -X POST --data { "token": "token value", "id_course": "1", "level": "1", "theme": "Thème", "description": "Déscription", "cois": [ {  	"id_course": "1", "level": "1", "id_coi": "8045", "qr_code": "devinettes", "description": "description du coi", "position_in_course": "1" } ] } https://localhost:8080/api/addCourse
+```
+
+
+#### Example request body
+
+```json
+{
+  "token": "token value",
+  "id_course": "1",
+  "level": "1",
+  "theme": "Thème",
+  "description": "Déscription",
+  "cois":
+  [
+       {
+      	"id_course": "1",
+        "level": "1",
+        "id_coi": "8045",
+        "qr_code": "devinettes",
+        "description": "description du coi",
+        "position_in_course": "1"
+        }
+  ]
+}
+```
+
+
+#### Example response
+
+```json
+
+```
+
+### Add a center of interest to an existing course
+This endpoint allows you to add a center of interest to an existing course.
+
+```endpoint
+POST http://localhost:8080/api/add_COI_to_course
+```
+
+#### Example request
+
+```curl
+curl -X POST --data { "token": "token value", "id_course": "5", "level": "1", "id_coi": "8045", "qr_code": "devinettes", "description": "description du coi", "position_in_course": "1" } https://localhost:8080/api/add_COI_to_course
+```
+
+
+#### Example request body
+
+```json
+{
+    "token": "token value",
+	"id_course": "5",
+    "level": "1",
+    "id_coi": "8045",
+    "qr_code": "devinettes",
+    "description": "description du coi",
+    "position_in_course": "1"
+}
+```
+
+
+#### Example response
+
+```json
+
+```
+
 
 ### Get parcours : level
 

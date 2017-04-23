@@ -42,8 +42,7 @@
 *.gch
 *.pch
 #Node
-node_modules/
-
+*node_modules/
 
 # Compiled Dynamic libraries
 *.so
@@ -98,7 +97,7 @@ cCompiler
 build/
 .vscode/
 
-#.s files 
+#.s files
 *.s
 
 # clion

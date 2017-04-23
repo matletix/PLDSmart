@@ -196,6 +196,7 @@ router.post('/grandLyonDataAddFeatures', function (req, res) {
 
 });
 
+// TODO : dev only
 // Return all the stored centers of interest
 router.post('/allCentersOfInterest', function (req, res) {
 
@@ -261,6 +262,7 @@ router.post('/add_COI_to_course', function (req, res) {
     });
 });
 
+// TODO : dev only
 router.post('/get_Course_coi_content', function (req, res) {
     var _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
 
@@ -273,6 +275,7 @@ router.post('/get_Course_coi_content', function (req, res) {
     });
 });
 
+// TODO : dev only
 router.post('/get_course_content', function(req, res){
 
     var _pgdao = new pgDAO([new Table('course', ['id_course', 'niveau'])]);
@@ -287,6 +290,7 @@ router.post('/get_course_content', function(req, res){
 
 });
 
+// TODO : dev only
 router.get('/getTestDatas', function(req, res){
     console.log('Returning test datas');
     const array = [
