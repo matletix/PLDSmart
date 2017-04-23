@@ -16,11 +16,14 @@ export const dispatchAction = {
   set_username: (username) => {
     return {type: types.SET_USERNAME, payload: username}
   },
-  set_pwd: (pwd) => {
+  set_password: (pwd) => {
     return {type: types.SET_PWD, payload: pwd}
   },
   set_pseudo: (pseudo) => {
     return {type: types.SET_PSEUDO, payload: pseudo}
+  },
+  set_points: (points) => {
+    return {type: types.SET_POINTS, payload: points}
   },
   set_level: (level) => {
     return {type: types.SET_LEVEL, payload: level}

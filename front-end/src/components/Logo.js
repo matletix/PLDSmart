@@ -20,9 +20,6 @@ class Logo extends Component {
 
 
 const styles = StyleSheet.create({
-  center: {
-    alignItems: 'center',
-  },
   logo: {
     width: 150,
     height:150,

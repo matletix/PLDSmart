@@ -8,7 +8,7 @@ import { Button } from 'react-native-elements'
 
 class LoginFormError extends Component {
   render() {
-    const { onLoginInputChange, onMdpInputChange, onLoginPress, onSigninPress, loginInput, mdpInput, onContinuePress } = this.props
+    const { onLoginInputChange, onMdpInputChange, onLoginPress, onSigninPress, loginInput, mdpInput, onContinuePress, errorMsg } = this.props
     return (
 	  <View style={styles.formContainer}>
 	    <TextInput
@@ -25,7 +25,7 @@ class LoginFormError extends Component {
 		value={mdpInput}
 	    />
 	    <View style={styles.center}>
-	    <Text style={styles.error}>Les identifiants saisis sont invalides ! DEBUG:</Text>
+	    <Text style={styles.error}>{errorMsg} DEBUG:</Text>
 	    <Button
 		title="Continuer quand même"
 		onPress={onContinuePress} />

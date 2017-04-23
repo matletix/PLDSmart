@@ -8,6 +8,7 @@ import { StyleSheet,
 import { Button,
        } from 'react-native-elements'
 import { connect } from 'react-redux'
+import { dispatchAction } from '../redux'
 import Logo from '../components/Logo'
 import LoginForm from '../components/LoginForm'
 import LoginFormError from '../components/LoginFormError'
@@ -33,6 +34,7 @@ class Login extends Component {
       mdpInput: '',
       loading: false,
       error: false,
+      errorMsg: ''
     };
   }
 
@@ -48,27 +50,12 @@ class Login extends Component {
     this.props.navigation.navigate('Home')
   }
   
-  // Trigger when clicking on the Login button
+  // Triggered when clicking on the Login button
   onLoginPress = async (login, password) => {
+    const {dispatch} = this.props
     this.setState({...this.state, loading: true})
     try {
-      // FIXME: no response from the backend server
-      // ------------------------------------------
-      // The request is made (you can analyze the network on an android emulator
-      // by pressing Ctrl+M, choose toogle inspector, and open the tab Network)
-      // but the Node server doesn't seem to receive the request (no logs output
-      // on the server) while it does work with kivy
-      // ------------------------------------------
-
-      // Test 1 succeeds
-      const test1 = await fetch('http://www.google.com')
-      console.log('TEST 1 REUSSI')
-      // Test 2 however fails !
-      const test2 = await fetch('http://localhost:8080/getTestDatas')
-      console.log('TEST 2 REUSSI')
-
-      // ------------------------------------------
-      const response = await fetch('http://localhost:8080/authentificate', {
+      const response = await fetch('http://10.0.2.2:8080/authentificate', {
         method: "POST",
 	headers: {
 	    'Accept': 'application/json',
@@ -76,13 +63,39 @@ class Login extends Component {
 	},
         body: JSON.stringify({pseudo: login, mdp: password})
       })
-      const posts = await response.json()
-      this.setState({...this.state, loading:false, error: false, mdpInput: ''})
-      this.props.navigation.navigate('Home');
+
+      // If the authentification was successful
+      if (response.status == 200) {
+	const rjson = await response.json()
+	console.log(rjson.token)
+
+	// Save returned data in the redux store
+	dispatch(dispatchAction.set_username(login))
+	dispatch(dispatchAction.set_password(password))
+	dispatch(dispatchAction.set_token(rjson.token))
+	// dispatch(dispatchAction.set_pseudo(rjson.pseudo))
+	// dispatch(dispatchAction.set_points(rjson.points))
+	// dispatch(dispatchAction.set_niveauMax(rjson.niveauMax))
+
+	// Reset state
+	this.setState({...this.state, loading: false, error: false, mdpInput: ''})
+
+	// Go to the Home screen
+	this.props.navigation.navigate('Home');
+
+      // If the authentification failed
+      } else {
+	console.log('Authentification error: the server responded '+response.status)
+      this.setState({...this.state, mdpInput: '', loading: false, error: true,
+		     errorMsg: 'Les identifiants saisis sont invalides',
+		    })
+      }
 
     } catch (e) {
-      console.log('Erreur!')
-      this.setState({...this.state, mdpInput: '', loading: false, error: true})
+      console.log('Authentification error : '+e)
+      this.setState({...this.state, mdpInput: '', loading: false, error: true,
+		     errorMsg: 'La tentative de connexion a échouée. Veuillez réessayer',
+		    })
     }
   }
 
@@ -134,6 +147,7 @@ class Login extends Component {
 	    loginInput={this.state.loginInput}
 	    mdpInput={this.state.mdpInput}
 	    onContinuePress={this.onContinuePress}
+	    errorMsg={this.state.errorMsg}
 	  />
 	</View>
     )}

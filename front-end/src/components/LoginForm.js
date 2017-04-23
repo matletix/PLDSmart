@@ -39,9 +39,6 @@ class LoginForm extends Component {
 
 
 const styles = StyleSheet.create({
-  center: {
-    alignItems: 'center',
-  },
   formContainer: {
     flex: 1,
     justifyContent: 'center',
