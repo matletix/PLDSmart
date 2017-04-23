@@ -7,9 +7,9 @@ var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var geoJson = require('geojson-tools');
-var GeoJson = require('geojson');
 
 const OO_Coi = require('./OO_Coi.js');
+const OO_Parcours = require('./OO_Parcours');
 
 var pgDAO = require('./pgDAO.js');
 var Table = require('./Table.js');
@@ -331,12 +331,20 @@ router.post('/getParcours/Specific', function(req, res){
     _pgdao.getCourseSpecific(req.body, function(sqlResult){
 
         var coi = new OO_Coi(8585, 'name', 1.5, 10.2);
+        var coi2 = new OO_Coi(9000, 'name2', 1.8, 12.1);
 
 
-        res.json(coi.toMyGeoJson());
+        var parc1 = new OO_Parcours(5, "parc5", "st5", 1, [coi]);
+        parc1.addCoi(coi2);
+
+        _pgdao.getCOI({'id_coi':1}, function(sqlR){
+            console.log('------------------');
+            //console.log(sqlR.rows);
+        });
+        _pgdao.createCOI(1);
+        res.send(coi.toMyGeoJson());
 
         /*
-
 
         result = JSON.stringify(sqlResult.rows); //todo : to geojson !! (featureCollection)
 
