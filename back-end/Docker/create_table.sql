@@ -6,7 +6,9 @@ CREATE TABLE "user_data"
     poids INT NOT NULL,
     sexe VARCHAR(1) NOT NULL,
     email VARCHAR(50) NOT NULL,
-    mdp VARCHAR(100) NOT NULL
+    mdp VARCHAR(100) NOT NULL,
+    level INT DEFAULT 1,
+    points INT DEFAULT 0
 );
 CREATE UNIQUE INDEX user_pseudo_uindex ON "user_data" (pseudo);
 CREATE EXTENSION postgis;

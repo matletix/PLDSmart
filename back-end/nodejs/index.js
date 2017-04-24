@@ -93,27 +93,30 @@ app.post('/authentificate', function(req, res) {
     var resultCallback = function(resSQL){
 
         var existInSql = false;
-        console.log('row:', resSQL.rows[0].count);
-        if(resSQL.rows[0].count.toString() === "1") {
+        console.log('row:', resSQL.rows.length);
+        if(resSQL.rows.length.toString() === "1") {
             existInSql = true;
         }
 
         if(existInSql){
             console.log("EXIST");
+            var userinfo = resSQL.rows[0];
 
             // Create a token
             var token = jwt.sign({'pseudo': req.body.pseudo}, '+super**Secret!', {
                 expiresIn: '24h' // expires in 24 hours
             });
+            if (userinfo['mdp']) delete userinfo['mdp'];
+            userinfo['token'] = token;
 
-            res.status(200).send({token: token});
+            res.status(200).send(userinfo);
         } else {
             console.log("DON T EXIST");
             res.status(401).send({ error: "Unauthorized :(" });
         }
     };
     // Call the count function
-    _pgdao.count({'pseudo': req.body.pseudo, 'mdp': req.body.mdp}, resultCallback);
+    _pgdao.findAll({'pseudo': req.body.pseudo, 'mdp': req.body.mdp}, resultCallback);
 
 }) ;
 
@@ -134,6 +137,10 @@ router.post('/grandLyonDataAddOneFeature', function (req, res) {
             console.log('INSERE !');
             res.status(200).send();
         };
+        var errorCallback = function(){
+            console.log('Error: grandLyonDataAddOneFeature');
+            res.status(500).send();
+        }
 
         _pgdao.insert(_params, resultCallback);
     }
@@ -180,7 +187,7 @@ router.post('/grandLyonDataAddFeatures', function (req, res) {
                     res.status(200).send();
                 };
 
-                _pgdao.insert(_params, resultCallback);
+                _pgdao.insert(_params, resultCallback, error);
             }
         }
 

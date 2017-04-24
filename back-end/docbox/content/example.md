@@ -5,7 +5,7 @@ Cette partie de l'API est pour l'identification / inscription des utilisateurs.
 
 ### Authentification
 
-Two responses are possible. If it suceeds, it send back a token (and 200 as response code), if it fails, it sends back (401).
+Two responses are possible. If it succeeds, it send back a token (and 200 as response code), if it fails, it sends back (401).
 
 ```endpoint
 POST http://localhost:8080/authentification
@@ -36,14 +36,21 @@ Property | Description
 
 ```json
 {
-  "token":"iJIUzI1NiCJ9.eyJwc2V1Z"
+  "pseudo": "tata",
+  "age": 25,
+  "poids": 50,
+  "sexe": "F",
+  "email": "tata@insa-lyon.fr",
+  "level": 1,
+  "points": 20,
+  "token": "token value"
 }
 ```
 
 ## Centers of interest
 
 ### Add one Grand Lyon geoJson feature
-With this endpoint, you can add to the database one single geoJson Feature, taken from the Grand Lyon API geoJson response.
+With this endpoint, you can add to the database one single geoJson Feature, taken from the Grand Lyon API geoJson response. Sends back status code 200 in case everything is OK, or status code 500 if an error occurs on the server.
 
 ```endpoint
 POST http://localhost:8080/api/grandLyonDataAddOneFeature
@@ -106,7 +113,7 @@ curl -X POST --data {"token": "token value", "type":"Feature", "properties":{ "i
 ```
 
 ### Add to the database the Grand Lyon data
-This endpoint requests the Grand Lyon API to get information about the cultural centers of interest, and stores them into the database.
+This endpoint requests the Grand Lyon API to get information about the cultural centers of interest, and stores them into the database. Sends back status code 200 in case everything is OK, or status code 500 if an error occurs on the server.
 
 ```endpoint
 POST http://localhost:8080/api/grandLyonDataAddFeatures
@@ -138,7 +145,7 @@ curl -X POST --data { "token": "token value" } https://localhost:8080/api/grandL
 ## Parcours
 
 ### Add a new course
-This endpoint allows you to add a new course.
+This endpoint allows you to add a new course. Sends back status code 200 in case everything is OK, or status code 500 if an error occurs on the server.
 
 ```endpoint
 POST http://localhost:8080/api/addCourse
@@ -182,7 +189,7 @@ curl -X POST --data { "token": "token value", "id_course": "1", "level": "1", "t
 ```
 
 ### Add a center of interest to an existing course
-This endpoint allows you to add a center of interest to an existing course.
+This endpoint allows you to add a center of interest to an existing course. Sends back status code 200 in case everything is OK, or status code 500 if an error occurs on the server.
 
 ```endpoint
 POST http://localhost:8080/api/add_COI_to_course
