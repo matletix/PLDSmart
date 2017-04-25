@@ -21,8 +21,8 @@ class OO_Parcours {
         //console.log(this.coi);
         let output =  GeoJson.parse(this.coi, {'Point': ['lat', 'lng']});
         //console.log(this.id);
-        //console.log(output);
-        return JSON.stringify(output);
+        console.log(output);
+        return output;
     }
 }
 
