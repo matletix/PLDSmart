@@ -4,7 +4,7 @@ export const types = {
   SET_USERNAME: 'SET_USERNAME',
   SET_PWD: 'SET_PWD',
   SET_PSEUDO: 'SET_PSEUDO',
-  SET_LEVEL: 'SET_LEVEL',
+  SET_LEVEL: 'SET_LEVEL_MAX',
   ADD_COURSE: 'ADD_COURSE',
 }
 
@@ -25,8 +25,8 @@ export const dispatchAction = {
   set_points: (points) => {
     return {type: types.SET_POINTS, payload: points}
   },
-  set_level: (level) => {
-    return {type: types.SET_LEVEL, payload: level}
+  set_levelMax: (level) => {
+    return {type: types.SET_LEVEL_MAX, payload: level}
   },
   add_course: (course) => {
     return {type: types.ADD_COURSE, payload: course}
@@ -40,8 +40,58 @@ const initialState = {
   password: '',
   pseudo: '',
   points: 0,
-  currentLevel: 0,
-  courses: [],
+  levelMax: 1,
+  courses: [
+    [
+      {
+	title: 'La Tête d\'Or',
+	image: 'localhost..',
+	description: 'Découvrez le parc de la Tête d\'Or, passez devant le Musée d\'Art Contemporain et traversez le Zoo de Lyon',
+	duree: '1h14',
+	distance: 6.0,
+      },
+      {
+	title: 'La Croix Rousse',
+	image: 'localhost..',
+	description: 'Déplacez vous dans les hauteurs du quartier de la Croix Rousse, passez par le Parc de la Cerisaie',
+	duree: '1h11',
+	distance: 5.6,
+      },
+      {
+	title: 'Fourvière',
+	image: 'localhost..',
+	description: 'Admirez la Cathédrale Saint-Jean-Baptiste, passez par les Théâtres Romains et devant le Musée d\'arts religieux de Fourvière',
+	duree: '1h25',
+	distance: 5.8, 
+      }
+    ],
+    [
+      {
+	title: 'La Tête d\'Or',
+	image: 'localhost..',
+	description: 'Découvrez le parc de la Tête d\'Or, passez devant le Musée d\'Art Contemporain et traversez le Zoo de Lyon',
+	duree: '1h14',
+	distance: 6.0,
+      },
+      {
+	title: 'La Croix Rousse',
+	image: 'localhost..',
+	description: 'Déplacez vous dans les hauteurs du quartier de la Croix Rousse, passez par le Parc de la Cerisaie',
+	duree: '1h11',
+	distance: 5.6,
+      },
+      {
+	title: 'Fourvière',
+	image: 'localhost..',
+	description: 'Admirez la Cathédrale Saint-Jean-Baptiste, passez par les Théâtres Romains et devant le Musée d\'arts religieux de Fourvière',
+	duree: '1h25',
+	distance: 5.8, 
+      }
+    ],
+    [],
+    [],
+    [],
+  ],
 }
 
 // Function to handle actions and update the state of the store.
@@ -80,7 +130,7 @@ export const reducer = (state = initialState, action) => {
 	pseudo: payload,
       }
     }
-    case types.SET_LEVEL: {
+    case types.SET_LEVEL_MAX: {
       return {
         ...state,
 	currentLevel: payload,

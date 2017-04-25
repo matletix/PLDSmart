@@ -55,14 +55,18 @@ class Login extends Component {
     const {dispatch} = this.props
     this.setState({...this.state, loading: true})
     try {
-      const response = await fetch('http://10.0.2.2:8080/authentificate', {
+      const url = 'http://10.0.2.2:8080/authentificate'
+      const options = {
         method: "POST",
+	timeout: 5000,
 	headers: {
 	    'Accept': 'application/json',
 	    'Content-Type': 'application/json',
 	},
         body: JSON.stringify({pseudo: login, mdp: password})
-      })
+      }
+
+      const response = await fetch(url, options)
 
       // If the authentification was successful
       if (response.status == 200) {
@@ -75,7 +79,7 @@ class Login extends Component {
 	dispatch(dispatchAction.set_token(rjson.token))
 	// dispatch(dispatchAction.set_pseudo(rjson.pseudo))
 	// dispatch(dispatchAction.set_points(rjson.points))
-	// dispatch(dispatchAction.set_niveauMax(rjson.niveauMax))
+	// dispatch(dispatchAction.set_levelMax(rjson.levelMax))
 
 	// Reset state
 	this.setState({...this.state, loading: false, error: false, mdpInput: ''})

@@ -6,33 +6,23 @@ import { StyleSheet,
 import { List,
 	 ListItem
        } from 'react-native-elements';
+import { connect } from 'react-redux'
+import { dispatchAction } from '../redux'
+
+
+const mapStateToProps = (state) => ({
+  courses: state.courses,
+  levelMax: state.levelMax,
+  token: state.token,
+})
+
 
 class Levels extends Component {
+
   static navigationOptions = {
     title: 'Niveaux',
   }
 
-  constructor(props) {
-    super(props);
-    this.state = {currentLevel: 2, listItems: [
-      {
-	title: 'Niveau 1',
-      },
-      {
-	title: 'Niveau 2',
-      },
-      {
-	title: 'Niveau 3',
-      },
-      {
-	title: 'Niveau 4',
-      },
-      {
-	title: 'Niveau 5',
-      },
-    ]}
-  }
-  
   onLevelPress = () => {
     this.props.navigation.navigate('Courses');
   };
@@ -44,12 +34,13 @@ class Levels extends Component {
 	<Text style={styles.description}>Les niveaux supérieurs sont débloqués au fur et à mesure de la progression dans les niveaux précédents.</Text>
 	<List containerStyle={styles.listContainer}>
 	{
-	  this.state.listItems.map((item, i) => {
-	    let locked = i+1 > this.state.currentLevel ? true : false;
+	  this.props.courses.map((item, i) => {
+	    let level = i+1
+	    let locked = level > this.props.levelMax ? true : false;
 	    return (
 		<ListItem
 		key={i}
-		title={item.title}
+	        title={"Niveau "+(level)}
 	        containerStyle={locked ? styles.listItemLocked : styles.listItemUnlocked}
 		chevronColor='#ffa000'
 		hideChevron = {locked}
@@ -98,4 +89,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default Levels;
+export default connect(mapStateToProps)(Levels);
