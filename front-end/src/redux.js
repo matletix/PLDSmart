@@ -41,56 +41,33 @@ const initialState = {
   pseudo: '',
   points: 0,
   levelMax: 1,
+  totalLevels: 5,
   courses: [
-    [
-      {
-	title: 'La Tête d\'Or',
-	image: 'localhost..',
-	description: 'Découvrez le parc de la Tête d\'Or, passez devant le Musée d\'Art Contemporain et traversez le Zoo de Lyon',
-	duree: '1h14',
-	distance: 6.0,
-      },
-      {
-	title: 'La Croix Rousse',
-	image: 'localhost..',
-	description: 'Déplacez vous dans les hauteurs du quartier de la Croix Rousse, passez par le Parc de la Cerisaie',
-	duree: '1h11',
-	distance: 5.6,
-      },
-      {
-	title: 'Fourvière',
-	image: 'localhost..',
-	description: 'Admirez la Cathédrale Saint-Jean-Baptiste, passez par les Théâtres Romains et devant le Musée d\'arts religieux de Fourvière',
-	duree: '1h25',
-	distance: 5.8, 
-      }
-    ],
-    [
-      {
-	title: 'La Tête d\'Or',
-	image: 'localhost..',
-	description: 'Découvrez le parc de la Tête d\'Or, passez devant le Musée d\'Art Contemporain et traversez le Zoo de Lyon',
-	duree: '1h14',
-	distance: 6.0,
-      },
-      {
-	title: 'La Croix Rousse',
-	image: 'localhost..',
-	description: 'Déplacez vous dans les hauteurs du quartier de la Croix Rousse, passez par le Parc de la Cerisaie',
-	duree: '1h11',
-	distance: 5.6,
-      },
-      {
-	title: 'Fourvière',
-	image: 'localhost..',
-	description: 'Admirez la Cathédrale Saint-Jean-Baptiste, passez par les Théâtres Romains et devant le Musée d\'arts religieux de Fourvière',
-	duree: '1h25',
-	distance: 5.8, 
-      }
-    ],
-    [],
-    [],
-    [],
+    {
+      level: 1,
+      id_course: 1,
+      theme: 'La Tête d\'Or',
+      image: 'localhost..',
+      story_course: 'Découvrez le parc de la Tête d\'Or, passez devant le Musée d\'Art Contemporain et traversez le Zoo de Lyon',
+      duration: '1h14',
+      distance: 6.0,
+    },
+    {
+      level: 1,
+      id_course: 2,
+      theme: 'La Croix Rousse',
+      image: 'localhost..',
+      story_course: 'Déplacez vous dans les hauteurs du quartier de la Croix Rousse, passez par le Parc de la Cerisaie',
+      duration: '1h11',
+      distance: 5.6,
+    },
+    {
+      theme: 'Fourvière',
+      image: 'localhost..',
+      story_course: 'Admirez la Cathédrale Saint-Jean-Baptiste, passez par les Théâtres Romains et devant le Musée d\'arts religieux de Fourvière',
+      duration: '1h25',
+      distance: 5.8, 
+    }
   ],
 }
 

@@ -13,6 +13,7 @@ import { dispatchAction } from '../redux'
 const mapStateToProps = (state) => ({
   courses: state.courses,
   levelMax: state.levelMax,
+  totalLevels: state.totalLevels,
   token: state.token,
 })
 
@@ -28,19 +29,24 @@ class Levels extends Component {
   };
   
   render() {
+    let listLevels = []
+    for (level=1; level<=this.props.totalLevels; level++)
+    {
+	listLevels = [...listLevels, level]
+    }
     return (
 	<View style={styles.container}>
 	<Text style={styles.title}>Choisissez un niveau de difficulté</Text>
 	<Text style={styles.description}>Les niveaux supérieurs sont débloqués au fur et à mesure de la progression dans les niveaux précédents.</Text>
 	<List containerStyle={styles.listContainer}>
 	{
-	  this.props.courses.map((item, i) => {
+	  listLevels.map((item, i) => {
 	    let level = i+1
 	    let locked = level > this.props.levelMax ? true : false;
 	    return (
 		<ListItem
 		key={i}
-	        title={"Niveau "+(level)}
+	        title={"Niveau "+level}
 	        containerStyle={locked ? styles.listItemLocked : styles.listItemUnlocked}
 		chevronColor='#ffa000'
 		hideChevron = {locked}
