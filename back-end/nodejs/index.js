@@ -16,6 +16,7 @@ var Table = require('./Table.js');
 var lib = require('./lib.js');
 
 var rp = require('request-promise');
+var GeoJson = require('geojson');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -357,6 +358,70 @@ router.post('/getParcours/Specific', function(req, res){
     });
 });
 
+// TODO: AIR QUALITY (AQI & color)
+router.post('/getAirQuality', function(req, res){
+  if (req.body && req.body['lat'] && req.body['lon']){
+      var lat = req.body['lat'];
+      var lon = req.body['lon'];
+
+      lib.airQualityRequest(lat, lon, function (result) {
+          // Formattion the result
+          result['aqi'] = result['breezometer_aqi'];
+          result['color'] = result['breezometer_color'];
+          result['lat'] = lat;
+          result['lon'] = lon;
+          delete result['breezometer_aqi'];
+          delete result['breezometer_color'];
+
+          result =  GeoJson.parse(result, {Point: ['lat', 'lon']});
+
+          console.log('AQI : ', result);
+          res.status(200).send(result);
+      }, function (err) {
+          console.log('Erreur get Air Quality ! ', err);
+          res.status(500).send();
+      });
+  } else {
+      console.log('Bad request latitude and/or longitude not provided ! ', err);
+      res.status(400).send();
+  }
+
+});
+
+// TODO: METEO
+router.post('/getWeather', function(req, res){
+    if (req.body && req.body['lat'] && req.body['lon']){
+        var lat = req.body['lat'];
+        var lon = req.body['lon'];
+
+        lib.weatherRequest(lat, lon, function (response) {
+            // Formattion the result
+            var result = {};
+            console.log('api weather response : ', response);
+            result['main'] = response['main'];
+            result['weather'] = response['weather'];
+            result['wind'] = response['wind'];
+
+            result['lat'] = lat;
+            result['lon'] = lon;
+
+            result =  GeoJson.parse(result, {Point: ['lat', 'lon']});
+
+            console.log('weather : ', result);
+            res.status(200).send(result);
+
+        }, function (err) {
+            console.log('Erreur get weather ! ', err);
+            res.status(500).send();
+        });
+    } else {
+        console.log('Bad request latitude and/or longitude not provided ! ', err);
+        res.status(400).send();
+    }
+});
+// TODO: ELEVATION
+
+// TODO: User information update (nb points, level)
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api

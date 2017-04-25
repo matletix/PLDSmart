@@ -1,3 +1,5 @@
+var rp = require('request-promise');
+
 module.exports.template =  {
     "id": 0,
     "id_sitra1": "",
@@ -61,4 +63,56 @@ module.exports.template_insert_course = {
     "level": "",
     "theme": "",
     "description": ""
+};
+
+// BreezoMeter API request
+// Takes (latitude, longitude)
+// Key: d49278db0bb144e0bd24289c2d35ca5b
+var AQI_api_key = 'd49278db0bb144e0bd24289c2d35ca5b';
+var AQI_api_uri = 'https://api.breezometer.com/baqi/';
+var AQI_api_qs = {
+  'fields': 'breezometer_aqi,breezometer_color,datetime',
+  'key': AQI_api_key
+};
+
+module.exports.airQualityRequest = function(latitude, longitude, resFct, errFct){
+  AQI_api_qs['lat'] = latitude;
+  AQI_api_qs['lon'] = longitude;
+
+  var options = {
+      uri: AQI_api_uri,
+      qs: AQI_api_qs,
+      headers: {
+          'User-Agent': 'Request-Promise'
+      },
+      json: true // Automatically parses the JSON string in the response
+  };
+  rp(options)
+      .then(resFct)
+      .catch(errFct);
+};
+
+// OpenWeatherMap API request
+var w_api_uri = 'http://api.openweathermap.org/data/2.5/weather';
+var w_api_key = '45aa07fcda8f6d22d2744d331313e0b8';
+var w_api_qs = {
+    'appid': w_api_key,
+    'units': 'metric'
+};
+
+module.exports.weatherRequest = function(latitude, longitude, resFct, errFct){
+  w_api_qs['lat'] = latitude;
+  w_api_qs['lon'] = longitude;
+
+  var options = {
+      uri: w_api_uri,
+      qs: w_api_qs,
+      headers: {
+          'User-Agent': 'Request-Promise'
+      },
+      json: true // Automatically parses the JSON string in the response
+  };
+  rp(options)
+      .then(resFct)
+      .catch(errFct);
 };
