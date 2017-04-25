@@ -5,7 +5,7 @@ Cette partie de l'API est pour l'identification / inscription des utilisateurs.
 
 ### Authentification
 
-Two responses are possible. If it suceeds, it send back a token (and 200 as response code), if it fails, it sends back (401).
+Two responses are possible. If it succeeds, it send back a token (and 200 as response code), if it fails, it sends back (401).
 
 ```endpoint
 POST http://localhost:8080/authentification
@@ -36,9 +36,249 @@ Property | Description
 
 ```json
 {
-  "token":"iJIUzI1NiCJ9.eyJwc2V1Z"
+  "pseudo": "tata",
+  "age": 25,
+  "poids": 50,
+  "sexe": "F",
+  "email": "tata@insa-lyon.fr",
+  "level": 1,
+  "points": 20,
+  "token": "token value"
 }
 ```
+
+## Centers of interest
+
+### Add one Grand Lyon geoJson feature
+With this endpoint, you can add to the database one single geoJson Feature, taken from the Grand Lyon API geoJson response. Sends back status code 200 in case everything is OK, or status code 500 if an error occurs on the server.
+
+```endpoint
+POST http://localhost:8080/api/grandLyonDataAddOneFeature
+```
+
+#### Example request
+
+```curl
+curl -X POST --data {"token": "token value", "type":"Feature", "properties":{ "id":"92765", "id_sitra1":"sitraPCU653938", "type":"PATRIMOINE_CULTUREL", "type_detail":"Détails", "nom":"Nom du centre d'intérêt", "adresse":"adresse du centre d'intérêt", "codepostal":"69660", "commune":"Nom de la commune", "telephone":"0470220212", "fax":"0480220212", "telephonefax":"0480220219", "email":"email@email.com", "siteweb":"http:\/\/www.site.fr", "facebook":"", "classement":"", "ouverture":"", "tarifsenclair":"entre 5 et 15 euros", "tarifsmin":"5", "tarifsmax":"15", "producteur":"Lyon Tourisme et Congrès", "gid":"284", "date_creation":"2011-03-11 15:05:18", "last_update":"2016-04-20 06:22:11", "last_update_fme":"2017-03-16 00:15:34" }, "geometry":{ "type":"Point", "coordinates":[ 4.834414, 45.82862 ] } } https://localhost:8080/api/grandLyonDataAddOneFeature
+```
+
+
+#### Example request body
+
+```json
+{
+    "token": "value of the token",
+	"type":"Feature",
+	"properties":{
+		"id":"92765",
+		"id_sitra1":"sitraPCU653938",
+		"type":"PATRIMOINE_CULTUREL",
+		"type_detail":"",
+		"nom":"Nom du centre d'intérêt",
+		"adresse":"20 Avenue adresse",
+		"codepostal":"69660",
+		"commune":"Commune",
+		"telephone":"0478221212",
+		"fax":"0478229212",
+		"telephonefax":"0458221212",
+		"email":"email@email.com",
+		"siteweb":"http:\/\/www.siteweb.fr",
+		"facebook":"",
+		"classement":"",
+		"ouverture":"De 8H00 à 18H00",
+		"tarifsenclair":"De 5 à 25 Euros",
+		"tarifsmin":"5",
+		"tarifsmax":"25",
+		"producteur":"Lyon Tourisme et Congrès",
+		"gid":"284",
+		"date_creation":"2011-03-11 15:05:18",
+		"last_update":"2016-04-20 06:22:11",
+		"last_update_fme":"2017-03-16 00:15:34"
+	},
+    "geometry":{
+        "type":"Point",
+        "coordinates":[
+           4.834414,
+           45.82862
+        ]
+     }
+}
+```
+
+
+#### Example response
+
+```json
+
+```
+
+### Add to the database the Grand Lyon data
+This endpoint requests the Grand Lyon API to get information about the cultural centers of interest, and stores them into the database. Sends back status code 200 in case everything is OK, or status code 500 if an error occurs on the server.
+
+```endpoint
+POST http://localhost:8080/api/grandLyonDataAddFeatures
+```
+
+#### Example request
+
+```curl
+curl -X POST --data { "token": "token value" } https://localhost:8080/api/grandLyonDataAddFeatures
+```
+
+
+#### Example request body
+
+```json
+{
+    "token": "value of the token"
+}
+```
+
+
+#### Example response
+
+```json
+
+```
+
+
+## Parcours
+
+### Add a new course
+This endpoint allows you to add a new course. Sends back status code 200 in case everything is OK, or status code 500 if an error occurs on the server.
+
+```endpoint
+POST http://localhost:8080/api/addCourse
+```
+
+#### Example request
+
+```curl
+curl -X POST --data { "token": "token value", "id_course": "1", "level": "1", "theme": "Thème", "description": "Déscription", "cois": [ {  	"id_course": "1", "level": "1", "id_coi": "8045", "qr_code": "devinettes", "description": "description du coi", "position_in_course": "1" } ] } https://localhost:8080/api/addCourse
+```
+
+
+#### Example request body
+
+```json
+{
+  "token": "token value",
+  "id_course": "1",
+  "level": "1",
+  "theme": "Thème",
+  "description": "Déscription",
+  "cois":
+  [
+       {
+      	"id_course": "1",
+        "level": "1",
+        "id_coi": "8045",
+        "qr_code": "devinettes",
+        "description": "description du coi",
+        "position_in_course": "1"
+        }
+  ]
+}
+```
+
+
+#### Example response
+
+```json
+
+```
+
+### Add a center of interest to an existing course
+This endpoint allows you to add a center of interest to an existing course. Sends back status code 200 in case everything is OK, or status code 500 if an error occurs on the server.
+
+```endpoint
+POST http://localhost:8080/api/add_COI_to_course
+```
+
+#### Example request
+
+```curl
+curl -X POST --data { "token": "token value", "id_course": "5", "level": "1", "id_coi": "8045", "qr_code": "devinettes", "description": "description du coi", "position_in_course": "1" } https://localhost:8080/api/add_COI_to_course
+```
+
+
+#### Example request body
+
+```json
+{
+    "token": "token value",
+	"id_course": "5",
+    "level": "1",
+    "id_coi": "8045",
+    "qr_code": "devinettes",
+    "description": "description du coi",
+    "position_in_course": "1"
+}
+```
+
+
+#### Example response
+
+```json
+
+```
+
+
+### Get parcours : level
+
+With this endpoint, you can get every parcours which have a level <= as a specified one.
+
+```endpoint
+POST http://localhost:8080/api/getParcours/Level
+```
+
+#### Example request
+
+```curl
+curl -X POST --data {"token":"qposifqspof", "level":5} https://localhost:8080/api/getParcoursLevel
+```
+
+
+#### Example request body
+
+```json
+{
+  "token" : "aqqf54",
+  "level" : 5,
+}
+```
+
+Property | Description
+---|---
+`token` |  access token
+`level` | one specific level
+
+#### Example response
+
+```json
+[
+  {
+    "level": 1,
+    "id_course": 1,
+    "theme": "Il était une fois",
+    "story_course": "la vie !"
+  },
+  {
+    "level": 1,
+    "id_course": 2,
+    "theme": "Lorem",
+    "story_course": "ipsum"
+  },
+  {
+    "level": 2,
+    "id_course": 3,
+    "theme": "Neque soluta",
+    "story_course": "voluptatem totam dignissimos"
+  }
+]
+```
+
+## Tests
 
 ### Get geoPoints
 
@@ -76,6 +316,8 @@ $ curl http://localhost:8080/api/getTestDatas?token=MYTOKEN
   ]
 }
 ```
+
+## Others
 
 ### Retrieve a wobble
 

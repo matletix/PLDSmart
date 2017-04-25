@@ -1,12 +1,21 @@
 // BASE SETUP
 // =============================================================================
-
+/*jshint esversion: 6 */
 // call the packages we need
 var express    = require('express');        // call express
 var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var geoJson = require('geojson-tools');
+
+const OO_Coi = require('./OO_Coi.js');
+const OO_Parcours = require('./OO_Parcours');
+
+var pgDAO = require('./pgDAO.js');
+var Table = require('./Table.js');
+var lib = require('./lib.js');
+
+var rp = require('request-promise');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -70,57 +79,283 @@ router.use(function(req, res, next) {
 
 // Just to test the user account creation
 app.get('/signuptest', function(req, res) {
-      // add a static user to the database
-      pool.query('SELECT PostGIS_full_version()', [], function(errSQL, resSQL) {
-        if(errSQL) {
-          return console.error('error running query', errSQL);
-        }
 
-        res.json({row: resSQL.rows[0]});
-        console.log('row:', resSQL.rows[0]);
-      });
+
 });
 
 app.post('/authentificate', function(req, res) {
-    var existInSql = false;
 
-    pool.query('SELECT COUNT(*) FROM user_data WHERE pseudo=$1 AND mdp=$2', [req.body.pseudo, req.body.mdp], function(errSQL, resSQL) {
 
-        if(errSQL) {
-            return console.error('error running query', errSQL);
-        }
-        console.log('row:', resSQL.rows[0].count);
-        if(resSQL.rows[0].count.toString() === "1") {
+    var tables = [];
+    tables.push(new Table('user_data', ['pseudo']));
+    var _pgdao = new pgDAO(tables);
+    // Define what to do with the result
+    var resultCallback = function(resSQL){
+
+        var existInSql = false;
+        console.log('row:', resSQL.rows.length);
+        if(resSQL.rows.length.toString() === "1") {
             existInSql = true;
         }
 
         if(existInSql){
             console.log("EXIST");
+            var userinfo = resSQL.rows[0];
 
             // Create a token
             var token = jwt.sign({'pseudo': req.body.pseudo}, '+super**Secret!', {
                 expiresIn: '24h' // expires in 24 hours
             });
+            if (userinfo['mdp']) delete userinfo['mdp'];
+            userinfo['token'] = token;
 
-            res.status(200).send({token: token});
+            res.status(200).send(userinfo);
         } else {
             console.log("DON T EXIST");
             res.status(401).send({ error: "Unauthorized :(" });
         }
+    };
+    // Call the count function
+    _pgdao.findAll({'pseudo': req.body.pseudo, 'mdp': req.body.mdp}, resultCallback);
 
-    })}) ;
+}) ;
 
+
+// End point to add getting one Feature to insert into the database
+router.post('/grandLyonDataAddOneFeature', function (req, res) {
+    var grandLyonData = req.body;
+    console.log('Adding a new center of interest');
+    var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
+
+    if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
+        // Formatting grand Lyon data
+        var _params = lib.formatgl(grandLyonData, lib.template);
+        console.log(_params);
+        // Insert the object to the data base
+        // Define the result callback function
+        var resultCallback = function(){
+            console.log('INSERE !');
+            res.status(200).send();
+        };
+        var errorCallback = function(){
+            console.log('Error: grandLyonDataAddOneFeature');
+            res.status(500).send();
+        }
+
+        _pgdao.insert(_params, resultCallback);
+    }
+});
+
+// Function that requests the GRAND LYON API
+var grandLyonRequest = function (uri, qs, resFct, errFct) {
+    console.log('Grand Lyon request');
+    var options = {
+        uri: uri,
+        qs: qs,
+        headers: {
+            'User-Agent': 'Request-Promise'
+        },
+        json: true // Automatically parses the JSON string in the response
+    };
+    rp(options)
+        .then(resFct)
+        .catch(errFct);
+};
+
+// End point requesting grand Lyon to get all the features
+// Inserts the ones of type "PATRIMOINE_CULTUREL"
+router.post('/grandLyonDataAddFeatures', function (req, res) {
+
+    var error = function (err) {
+        console.log('ERROR !', err);
+        res.status(500).send();
+    };
+
+    var add_CofI_db = function (result) {
+        console.log('RESULT GRAND LYON : ', result);
+        console.log('Adding a new center of interest');
+        var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
+        for(let grandLyonData of result['features']){
+            if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
+                // Formatting grand Lyon data
+                var _params = lib.formatgl(grandLyonData, lib.template);
+                console.log(_params);
+                // Insert the object to the data base
+                // Define the result callback function
+                var resultCallback = function(){
+                    console.log('INSERE !');
+                    res.status(200).send();
+                };
+
+                _pgdao.insert(_params, resultCallback, error);
+            }
+        }
+
+    };
+    var uri = 'https://download.data.grandlyon.com/wfs/rdata';
+    var qs = {
+        "SERVICE": "WFS",
+        "VERSION": "2.0.0",
+        "outputformat": "GEOJSON",
+        "maxfeatures": "3000",
+        "request": "GetFeature",
+        "typename": "sit_sitra.sittourisme",
+        "SRSNAME": "urn:ogc:def:crs:EPSG::4171"
+    };
+    grandLyonRequest(uri, qs, add_CofI_db, error);
+
+});
+
+// TODO : dev only
+// Return all the stored centers of interest
+router.post('/allCentersOfInterest', function (req, res) {
+
+    var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
+
+    _pgdao.findAll({}, function (result) {
+        console.log('Result sent !');
+        res.status(200).send(result['rows']);
+    }, function (err) {
+        console.log('Erreur Centres d\'intérêts!');
+        res.status(500).send();
+    });
+});
+
+
+// Add a new course
+router.post('/addCourse', function (req, res) {
+
+    // Format the params
+    var _params = lib.format(req.body, lib.template_insert_course);
+    var _pgdao = new pgDAO([new Table('course', ['id_course', 'niveau'])]);
+
+
+    _pgdao.insert(_params, function () {
+        console.log('Parcours inséré!');
+        res.status(200).send();
+    }, function (err) {
+        console.log('Erreur, Parcours non inséré! ', err);
+        res.status(500).send();
+    });
+
+    var cois = req.body['cois'];
+    _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
+
+    // Add the cois to the database
+    for (let coi of cois){
+
+        _params = lib.format(coi, lib.template_insert_coi);
+
+        _pgdao.insert(_params, function () {
+            console.log('coi inséré!');
+            res.status(200).send();
+        }, function (err) {
+            console.log('Erreur, coi non inséré! ', err);
+            res.status(500).send();
+        });
+    }
+
+});
+
+// Add a coi to a course
+router.post('/add_COI_to_course', function (req, res) {
+
+    var _params = lib.format(req.body, lib.template_insert_coi);
+    var _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
+
+    _pgdao.insert(_params, function () {
+        console.log('coi inséré!');
+        res.status(200).send();
+    }, function (err) {
+        console.log('Erreur, coi non inséré! ', err);
+        res.status(500).send();
+    });
+});
+
+// TODO : dev only
+router.post('/get_Course_coi_content', function (req, res) {
+    var _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
+
+    _pgdao.findAll({}, function (result) {
+        console.log('COIs : ', result["rows"]);
+        res.status(200).send(result["rows"]);
+    }, function (err) {
+        console.log('Erreur get courses ! ', err);
+        res.status(500).send();
+    });
+});
+
+// TODO : dev only
+router.post('/get_course_content', function(req, res){
+
+    var _pgdao = new pgDAO([new Table('course', ['id_course', 'niveau'])]);
+
+    _pgdao.findAll({}, function (result) {
+        console.log('Courses : ', result["rows"]);
+        res.status(200).send(result["rows"]);
+    }, function (err) {
+        console.log('Erreur get courses ! ', err);
+        res.status(500).send();
+    });
+
+});
+
+// TODO : dev only
 router.get('/getTestDatas', function(req, res){
     console.log('Returning test datas');
-    var array = [
-        [45.76263,4.823473], //Fourvière
-        [45.731135,4.81806], //Confluences
-        [45.753226,4.831275] //musee des arts decoratifs
+    const array = [
+        [45.76263, 4.823473], //Fourvière
+        [45.731135, 4.81806], //Confluences
+        [45.753226, 4.831275] //musee des arts decoratifs
     ];
 
     res.json(geoJson.toGeoJSON(array, 'multipoint'));
 });
 
+router.post('/getParcours/Level', function(req, res){
+    const level = req.body.level;
+    console.log("Asking for parcours with level <= " + req.body.level);
+    const _pgdao = new pgDAO([new Table('course')]);
+    _pgdao.getCoursesLevelInf(req.body, function(sqlResult){
+        result = JSON.stringify(sqlResult.rows);
+
+        console.log("sending back : " + result);
+        res.send(result);
+    });
+});
+
+router.post('/getParcours/Specific', function(req, res){
+    /*
+     SELECT * FROM course_coi c
+     JOIN centers_of_interest coi ON C.id_coi = coi.id
+     WHERE c.id_course = 1
+     ORDER BY  c.position_in_course;
+     */
+    const id_course = req.body.id_course;
+    console.log("Asking for course id : " + id_course);
+
+    const _pgdao = new pgDAO();
+    _pgdao.getCourseSpecific(req.body, function(sqlResult){
+
+        var coi = new OO_Coi(8585, 'name', 1.5, 10.2);
+        var coi2 = new OO_Coi(9000, 'name2', 1.8, 12.1);
+
+
+        var parc1 = new OO_Parcours(5, "parc5", "st5", 1, [coi]);
+        parc1.addCoi(coi2);
+
+        _pgdao.buildParc( [1, 2] );
+        res.send(coi.toMyGeoJson());
+
+        /*
+
+        result = JSON.stringify(sqlResult.rows); //todo : to geojson !! (featureCollection)
+
+        console.log("sending back : " + result);
+        res.send(result);
+        */
+    });
+});
 
 
 // REGISTER OUR ROUTES -------------------------------
