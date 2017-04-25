@@ -116,3 +116,28 @@ module.exports.weatherRequest = function(latitude, longitude, resFct, errFct){
       .then(resFct)
       .catch(errFct);
 };
+
+// MAPQUEST API request
+var elevation_api_uri = 'http://open.mapquestapi.com/elevation/v1/profile';
+var elevation_api_key = '6htTk7GGcFzMAu08Lg7T5nqFKwJNLvo9';
+var elevation_api_qs = {
+    'key': elevation_api_key,
+    'shapeFormat': 'raw'
+};
+
+// The request can contain many points at a time
+module.exports.elevationRequest = function(latitude, longitude, resFct, errFct){
+  elevation_api_qs['latLngCollection'] = '' + latitude + ',' + longitude + '';
+  console.log('Request elevation : ', elevation_api_qs);
+  var options = {
+      uri: elevation_api_uri,
+      qs: elevation_api_qs,
+      headers: {
+          'User-Agent': 'Request-Promise'
+      },
+      json: true // Automatically parses the JSON string in the response
+  };
+  rp(options)
+      .then(resFct)
+      .catch(errFct);
+};

@@ -388,7 +388,7 @@ router.post('/getAirQuality', function(req, res){
 
 });
 
-// TODO: METEO
+// TODO: Weather
 router.post('/getWeather', function(req, res){
     if (req.body && req.body['lat'] && req.body['lon']){
         var lat = req.body['lat'];
@@ -419,7 +419,36 @@ router.post('/getWeather', function(req, res){
         res.status(400).send();
     }
 });
+
 // TODO: ELEVATION
+router.post('/getElevation', function(req, res){
+    if (req.body && req.body['lat'] && req.body['lon']){
+        var lat = req.body['lat'];
+        var lon = req.body['lon'];
+
+        lib.elevationRequest(lat, lon, function (response) {
+            // Formattion the resul
+            console.log('Elevation api result : ', response);
+            var result = {};
+            result['elevation'] = response['elevationProfile'][0]['height'];
+            result['lat'] = lat;
+            result['lon'] = lon;
+
+            result =  GeoJson.parse(result, {Point: ['lat', 'lon']});
+
+            console.log('elevation : ', result);
+            res.status(200).send(result);
+
+        }, function (err) {
+            console.log('Erreur get elevation ! ', err);
+            res.status(500).send();
+        });
+    } else {
+        console.log('Bad request latitude and/or longitude not provided ! ', err);
+        res.status(400).send();
+    }
+});
+
 
 // TODO: User information update (nb points, level)
 
