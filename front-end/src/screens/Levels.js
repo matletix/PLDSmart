@@ -24,8 +24,8 @@ class Levels extends Component {
     title: 'Niveaux',
   }
 
-  onLevelPress = () => {
-    this.props.navigation.navigate('Courses');
+  onLevelPress = (level) => {
+    this.props.navigation.navigate('Courses', {level});
   };
   
   render() {
@@ -50,7 +50,7 @@ class Levels extends Component {
 	        containerStyle={locked ? styles.listItemLocked : styles.listItemUnlocked}
 		chevronColor='#ffa000'
 		hideChevron = {locked}
-                onPress = {locked ? null : () => this.onLevelPress()}
+                onPress = {locked ? null : () => this.onLevelPress(level)}
 		/>
 	    )})
 	}

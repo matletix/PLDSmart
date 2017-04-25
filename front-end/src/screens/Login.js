@@ -14,11 +14,7 @@ import LoginForm from '../components/LoginForm'
 import LoginFormError from '../components/LoginFormError'
 
 
-const mapStateToProps = (state) => ({
-  username: state.username,
-  password: state.password,
-  token: state.token,
-})
+const mapStateToProps = (state) => ({})
 
 
 class Login extends Component {

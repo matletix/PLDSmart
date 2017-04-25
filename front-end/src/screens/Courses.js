@@ -10,57 +10,39 @@ import { Button,
 	 Card,
 	 Divider,
        } from 'react-native-elements';
+import { connect } from 'react-redux'
+import { dispatchAction } from '../redux'
+
+const mapStateToProps = (state) => ({
+  courses: state.courses,
+  token: state.token,
+})
 
 
 class Courses extends Component {
-  static navigationOptions = {
-    title: 'Parcours',
-  }
-  constructor(props) {
-    super(props);
-    this.state = {listItems: [
-      {
-	title: 'La Tête d\'Or',
-	image: 'localhost..',
-	description: 'Découvrez le parc de la Tête d\'Or, passez devant le Musée d\'Art Contemporain et traversez le Zoo de Lyon',
-	duree: '1h14',
-	distance: 6.0,
-      },
-      {
-	title: 'La Croix Rousse',
-	image: 'localhost..',
-	description: 'Déplacez vous dans les hauteurs du quartier de la Croix Rousse, passez par le Parc de la Cerisaie',
-	duree: '1h11',
-	distance: 5.6,
-      },
-      {
-	title: 'Fourvière',
-	image: 'localhost..',
-	description: 'Admirez la Cathédrale Saint-Jean-Baptiste, passez par les Théâtres Romains et devant le Musée d\'arts religieux de Fourvière',
-	duree: '1h25',
-	distance: 5.8, 
-      }
-    ]}
-  }
+
+  static navigationOptions = ({navigation}) => ({
+    title: "Parcours niveau "+navigation.state.params.level,
+  })
   
   render() {
     return (
 	<ScrollView style={styles.container}>
 	    <Text style={styles.title}>Choisissez un parcours</Text>
 	{
-	  this.state.listItems.map((item, i) => (
+	  this.props.courses.filter((course) => (course.level == this.props.navigation.state.params.level)).map((item, i) => (
 		<Card
 		key={i}
-		title={item.title}
+		title={item.theme}
 		/* image={{uri:item.image}} */
 		image={require('../img/courseExample.png')}
 		containerStyle={styles.card}
 		imageStyle={styles.image}
 		>
-		<Text style={styles.description}>{item.description}</Text>
+		<Text style={styles.description}>{item.story_course}</Text>
 	      <Divider style={styles.divider}/>
 		<Text style={styles.distance}>Distance: {item.distance} km</Text>
-		<Text style={styles.duree}>Duree: {item.duree}</Text>
+		<Text style={styles.duree}>Duree: {item.duration}</Text>
 	      <Divider style={styles.divider} />
 	      <Button title='Sélectionner' raised buttonStyle={styles.button}/>
 		</Card>
@@ -106,4 +88,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default Courses;
+export default connect(mapStateToProps)(Courses);
