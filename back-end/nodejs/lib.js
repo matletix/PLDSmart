@@ -141,3 +141,14 @@ module.exports.elevationRequest = function(latitude, longitude, resFct, errFct){
       .then(resFct)
       .catch(errFct);
 };
+
+module.exports.userUpdateTemplate = {
+    "pseudo": "",
+    "age": "",
+    "poids": "",
+    "sexe": "",
+    "email": "",
+    "mdp": "",
+    "level": "",
+    "points": ""
+};

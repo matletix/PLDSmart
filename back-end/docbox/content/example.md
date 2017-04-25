@@ -47,6 +47,52 @@ Property | Description
 }
 ```
 
+### Update user information
+
+This allows to update users information.
+
+Property | Description/Sub-properties
+---|---
+`who`| specify the users you want to update their information
+`what`| specify the value of the attributes to be updated
+
+The properties of `who` and `what` can be one of this list : `pseudo`, `age`, `poids`, `sexe`, `email`, `level`, `mdp`, `points`
+
+
+Sends back status code 200 if everything is OK, or status code 500 if anything goes wrong on the server.
+
+```endpoint
+POST http://localhost:8080/api/updateUserInfo
+```
+
+#### Example request
+
+```curl
+curl -X POST --data { "token": "token value", "who": { "pseudo": "toto"	}, "what": { "level": "3", "points": "50" } } https://localhost:8080/api/updateUserInfo
+```
+
+
+#### Example request body
+
+```json
+{
+	"token": "token value",
+	"who": {
+		"pseudo": "toto"
+	},
+	"what": {
+	    "level": "3",
+	    "points": "50"
+	}
+}
+```
+
+#### Example response
+
+```json
+
+```
+
 ## Centers of interest
 
 ### Add one Grand Lyon geoJson feature

@@ -451,6 +451,28 @@ router.post('/getElevation', function(req, res){
 
 
 // TODO: User information update (nb points, level)
+router.post('/updateUserInfo', function(req, res){
+    // Format the params
+    var who = req.body['who'] || {};
+    var what = req.body['what'] || {};
+
+    var set_params = Object.assign({}, lib.userUpdateTemplate);
+    set_params = lib.format(what, set_params);
+
+    var where_params = Object.assign({}, lib.userUpdateTemplate);
+    where_params = lib.format(who, where_params);
+
+    var _pgdao = new pgDAO([new Table('user_data', ['pseudo'])]);
+
+    _pgdao.update(set_params, where_params, function () {
+        console.log('Informations utilisateur mises à jour');
+        res.status(200).send();
+    }, function (err) {
+        console.log('Erreur, mise à jour Informations utilisateur ', err);
+        res.status(500).send();
+    });
+
+});
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api

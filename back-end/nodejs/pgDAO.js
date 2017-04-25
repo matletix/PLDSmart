@@ -226,3 +226,44 @@ pgDAO.prototype.buildParc = function(id, callback) {
     })
     */
 };
+
+// UPDATE
+pgDAO.prototype.buildUpdateQuery = function (set_params, where_params) {
+    var set = '';
+    var where = '';
+    var first = true;
+    for (let param in set_params){
+        if (set_params[param]){
+            if(first){
+                first = false;
+            }
+            else {
+                set += ', ';
+            }
+            set += param + ' = ' + '\'' + set_params[param] + '\'';
+        }
+    }
+    first = true;
+    for (let param in where_params){
+        if (where_params[param]){
+            if(first){
+                first = false;
+            }
+            else {
+                where += ' AND ';
+            }
+            where += param + ' = ' + '\'' + where_params[param] + '\'';
+        }
+    }
+
+    var query = 'UPDATE ' + this._tables[0].getName() + ' SET ' + set + ' WHERE ' + where;
+    console.log('Update query : ', query);
+    return query;
+};
+
+pgDAO.prototype.update = function (set_params, where_params, resultCallback, errorCallback) {
+    // Build the query
+    var query = this.buildUpdateQuery(set_params, where_params);
+    // Execute the query
+    this.executeQuery(query, {}, resultCallback, errorCallback);
+};
