@@ -155,6 +155,18 @@ pgDAO.prototype.getCoursesLevelInf = function (_params, resultCallback, errorCal
     });
 };
 
+pgDAO.prototype.getCourse = function (id, callback) {
+    console.log("Requesting parcours with id = " + id);
+    pool.query('SELECT * FROM course WHERE id_course = $1::int', [id], function (errSQL, resSQL) {
+
+        if (errSQL) {
+            return console.error('error running query', errSQL);
+        }
+        callback(resSQL);
+
+    });
+};
+
 pgDAO.prototype.getCourseSpecific = function (_params, resultatCallback, errorCallback) {
     console.log("SQL - requesting parcours id : " + _params.id_course);
     pool.query('     SELECT * FROM course_coi c JOIN centers_of_interest coi ON C.id_coi = coi.id \
@@ -171,21 +183,21 @@ pgDAO.prototype.getCourseSpecific = function (_params, resultatCallback, errorCa
 };
 
 //used to get a specific COI, and parse it to a custom obj (ie OO_COI)
-pgDAO.prototype.getCOI = function (id_coi) {
+getCOI = function (id_coi) {
     /*
      SELECT ST_AsGeoJSON(coordinates), id, id_sitra1, type, type_detail, nom, adresse, codepostal, commune, telephone, email,
      siteweb, ouverture, tarifsenclair, tarifsmin, tarifsmax,date_creation, last_update, last_update_fme
      FROM centers_of_interest WHERE id = 1;
      */
     console.log("SQL - requesting coi id : " + id_coi);
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         pool.query('SELECT *, ST_AsGeoJSON(coordinates) FROM centers_of_interest \
                     WHERE id = $1::int;', [id_coi], function (errSQL, resSQL) {
             //console.log(resSQL);
             if (errSQL) {
                 return console.error('error running query', errSQL);
             }
-            console.log("return : " + resSQL);
+            //console.log("return : " + resSQL);
 
             //console.log("sql rows : " + util.inspect(res.rows[0], {showHidden: false, depth: null}));
             var row = resSQL.rows[0];
@@ -194,35 +206,73 @@ pgDAO.prototype.getCOI = function (id_coi) {
                 row.commune, row.telephone, row.email, row.siteweb, row.ouverture, row.tarifsenclair, row.tarifsmin, row.tarifsmax,
                 row.date_creation, row.last_update, row.last_update_fme, JSON.parse(row.st_asgeojson).coordinates[1],
                 JSON.parse(row.st_asgeojson).coordinates[0]);
-            console.log(coi.toMyGeoJson());
+            //console.log(coi.toMyGeoJson());
             resolve(coi);
         });
         //return 1;
-    })};
+    })
+};
+
+pgDAO.prototype.buildParc = function (id_parcours, callback) {
+
+    this.getParcoursCois(id_parcours).then(function(ids_coi) {
+        //console.log(ids_coi);
+        var promises = [];
+        for (let i in ids_coi) {
+            //console.log(ids_coi[i]);
+            promises.push(getCOI(ids_coi[i]));
+        }
+
+        Promise.all(promises).then(function (data) {
+            var parcours = new OO_Parcours(5, "parc5", "st5", 1, []);
+            //console.log(parcours.toMyGeoJson());
+            //console.log('-----------------');
+            //console.log("length : " + data.length);
+            //console.log(data[0].nom);
+            for (let i = 0; i < data.length; i++) {
+                //console.log(data[i]);
+                parcours.addCoi(data[i]);
+            }
+
+            //console.log("END : " + util.inspect(parcours.toMyGeoJson(), {showHidden: false, depth: null}));
+            callback (parcours);
+        }, function (err) {
+            // error occurred
+        });
+    })
+
+};
 
 
-pgDAO.prototype.buildParc = function(id, callback) {
-    var ajaxQueries = id.size;
-    console.log("calling " + ajaxQueries + " ajax queries");
-    console.log(id);
+pgDAO.prototype.getParcoursCois = function (id_course) {
+    return new Promise(function (resolve, reject) {
+        pool.query(' SELECT id_coi \
+            FROM course_coi \
+            WHERE id_course = $1::int \
+            ORDER BY position_in_course;', [id_course], function (errSQL, infos_course) {
+            //console.log(resSQL);
+            if (errSQL) {
+                return console.error('error running query', errSQL);
+            }
+            //console.log(infos_course);
 
-    var promises = [];
-    for (var i in id) {
-        console.log(id[i]);
-        promises.push(this.getCOI(id[i]));
-    }
-    Promise.all(promises).then(function() {
-        console.log("RESULT : " + util.inspect(promises[0], {showHidden: false, depth: null}));
-        console.log("RESULT : " + util.inspect(promises[1], {showHidden: false, depth: null}));
-        // returned data is in arguments[0], arguments[1], ... arguments[n]
-        // you can process it here
-    }, function(err) {
-        // error occurred
-    });
+            var ids_coi = [];
+            for (let i in infos_course.rows) {
+                let id_coi = infos_course.rows[i].id_coi;
+                //console.log(id_coi);
+                ids_coi.push(id_coi);
+            }
+            resolve(ids_coi);
+        });
+        //return 1;
+    })
+};
+
 
 /*
-    this.createCOI(id, function(res){
-        console.log("=====" + util.inspect(res, {showHidden: false, depth: null}));
-    })
-    */
-};
+ this.createCOI(id, function(res){
+ console.log("=====" + util.inspect(res, {showHidden: false, depth: null}));
+ })
+ */
+
+

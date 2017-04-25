@@ -2,11 +2,12 @@
 // =============================================================================
 /*jshint esversion: 6 */
 // call the packages we need
-var express    = require('express');        // call express
-var app        = express();                 // define our app using express
+var express = require('express');        // call express
+var app = express();                 // define our app using express
 var bodyParser = require('body-parser');
-var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var geoJson = require('geojson-tools');
+const util = require('util');
 
 const OO_Coi = require('./OO_Coi.js');
 const OO_Parcours = require('./OO_Parcours');
@@ -20,7 +21,7 @@ var GeoJson = require('geojson');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;        // set our port
@@ -34,14 +35,14 @@ const pool = require('./db.js');
 //after we're done nothing has to be taken care of
 //we don't have to return any client to the pool or close a connection
 /*
-pool.query('SELECT $1::int AS number', ['2'], function(err, res) {
-  if(err) {
-    return console.error('error running query', err);
-  }
+ pool.query('SELECT $1::int AS number', ['2'], function(err, res) {
+ if(err) {
+ return console.error('error running query', err);
+ }
 
-  console.log('number:', res.rows[0].number);
-});
-*/
+ console.log('number:', res.rows[0].number);
+ });
+ */
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -50,24 +51,24 @@ var router = express.Router();              // get an instance of the express Ro
 // middleware to use for all requests
 // This is executed when receiving any request
 // This allows to make validations
-router.use(function(req, res, next) {
+router.use(function (req, res, next) {
     // do logging
     console.log('This route requires a token!');
     // here the tokens are considered for posts and gets only
     var token = req.body.token || req.query.token;
-    if (token === "dev"){
+    if (token === "dev") {
         console.log('DEV TOKEN');
         next();
     } //todo : for dev only !!
-    else if (token){
-      jwt.verify(token, '+super**Secret!', function(err, decoded) {
-          if (err) {
-            return res.status(401).send({error: 'INVALID TOKEN'});
-          } else {
-            console.log('VALID TOKEN');
-            next();
-          }
-      });
+    else if (token) {
+        jwt.verify(token, '+super**Secret!', function (err, decoded) {
+            if (err) {
+                return res.status(401).send({error: 'INVALID TOKEN'});
+            } else {
+                console.log('VALID TOKEN');
+                next();
+            }
+        });
 
     } else {
         return res.status(401).send({error: 'NO TOKEN PROVIDED'});
@@ -79,27 +80,27 @@ router.use(function(req, res, next) {
 // API routes
 
 // Just to test the user account creation
-app.get('/signuptest', function(req, res) {
+app.get('/signuptest', function (req, res) {
 
 
 });
 
-app.post('/authentificate', function(req, res) {
+app.post('/authentificate', function (req, res) {
 
 
     var tables = [];
     tables.push(new Table('user_data', ['pseudo']));
     var _pgdao = new pgDAO(tables);
     // Define what to do with the result
-    var resultCallback = function(resSQL){
+    var resultCallback = function (resSQL) {
 
         var existInSql = false;
         console.log('row:', resSQL.rows.length);
-        if(resSQL.rows.length.toString() === "1") {
+        if (resSQL.rows.length.toString() === "1") {
             existInSql = true;
         }
 
-        if(existInSql){
+        if (existInSql) {
             console.log("EXIST");
             var userinfo = resSQL.rows[0];
 
@@ -113,13 +114,13 @@ app.post('/authentificate', function(req, res) {
             res.status(200).send(userinfo);
         } else {
             console.log("DON T EXIST");
-            res.status(401).send({ error: "Unauthorized :(" });
+            res.status(401).send({error: "Unauthorized :("});
         }
     };
     // Call the count function
     _pgdao.findAll({'pseudo': req.body.pseudo, 'mdp': req.body.mdp}, resultCallback);
 
-}) ;
+});
 
 
 // End point to add getting one Feature to insert into the database
@@ -128,17 +129,17 @@ router.post('/grandLyonDataAddOneFeature', function (req, res) {
     console.log('Adding a new center of interest');
     var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
 
-    if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
+    if (grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL') {
         // Formatting grand Lyon data
         var _params = lib.formatgl(grandLyonData, lib.template);
         console.log(_params);
         // Insert the object to the data base
         // Define the result callback function
-        var resultCallback = function(){
+        var resultCallback = function () {
             console.log('INSERE !');
             res.status(200).send();
         };
-        var errorCallback = function(){
+        var errorCallback = function () {
             console.log('Error: grandLyonDataAddOneFeature');
             res.status(500).send();
         }
@@ -176,14 +177,14 @@ router.post('/grandLyonDataAddFeatures', function (req, res) {
         console.log('RESULT GRAND LYON : ', result);
         console.log('Adding a new center of interest');
         var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
-        for(let grandLyonData of result['features']){
-            if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
+        for (let grandLyonData of result['features']) {
+            if (grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL') {
                 // Formatting grand Lyon data
                 var _params = lib.formatgl(grandLyonData, lib.template);
                 console.log(_params);
                 // Insert the object to the data base
                 // Define the result callback function
-                var resultCallback = function(){
+                var resultCallback = function () {
                     console.log('INSERE !');
                     res.status(200).send();
                 };
@@ -243,7 +244,7 @@ router.post('/addCourse', function (req, res) {
     _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
 
     // Add the cois to the database
-    for (let coi of cois){
+    for (let coi of cois) {
 
         _params = lib.format(coi, lib.template_insert_coi);
 
@@ -287,7 +288,7 @@ router.post('/get_Course_coi_content', function (req, res) {
 });
 
 // TODO : dev only
-router.post('/get_course_content', function(req, res){
+router.post('/get_course_content', function (req, res) {
 
     var _pgdao = new pgDAO([new Table('course', ['id_course', 'niveau'])]);
 
@@ -302,7 +303,7 @@ router.post('/get_course_content', function(req, res){
 });
 
 // TODO : dev only
-router.get('/getTestDatas', function(req, res){
+router.get('/getTestDatas', function (req, res) {
     console.log('Returning test datas');
     const array = [
         [45.76263, 4.823473], //Fourvière
@@ -313,11 +314,11 @@ router.get('/getTestDatas', function(req, res){
     res.json(geoJson.toGeoJSON(array, 'multipoint'));
 });
 
-router.post('/getParcours/Level', function(req, res){
+router.post('/getParcours/Level', function (req, res) {
     const level = req.body.level;
     console.log("Asking for parcours with level <= " + req.body.level);
     const _pgdao = new pgDAO([new Table('course')]);
-    _pgdao.getCoursesLevelInf(req.body, function(sqlResult){
+    _pgdao.getCoursesLevelInf(req.body, function (sqlResult) {
         result = JSON.stringify(sqlResult.rows);
 
         console.log("sending back : " + result);
@@ -325,7 +326,7 @@ router.post('/getParcours/Level', function(req, res){
     });
 });
 
-router.post('/getParcours/Specific', function(req, res){
+router.post('/getParcours/Specific', function (req, res) {
     /*
      SELECT * FROM course_coi c
      JOIN centers_of_interest coi ON C.id_coi = coi.id
@@ -336,61 +337,66 @@ router.post('/getParcours/Specific', function(req, res){
     console.log("Asking for course id : " + id_course);
 
     const _pgdao = new pgDAO();
-    _pgdao.getCourseSpecific(req.body, function(sqlResult){
 
-        var coi = new OO_Coi(8585, 'name', 1.5, 10.2);
-        var coi2 = new OO_Coi(9000, 'name2', 1.8, 12.1);
+    var coi = new OO_Coi(8585, 'name', 1.5, 10.2);
+    var coi2 = new OO_Coi(9000, 'name2', 1.8, 12.1);
 
 
-        var parc1 = new OO_Parcours(5, "parc5", "st5", 1, [coi]);
-        parc1.addCoi(coi2);
+    var parc1 = new OO_Parcours(5, "parc5", "st5", 1, [coi]);
+    parc1.addCoi(coi2);
+    //console.log("-> -> " + util.inspect(parc1.toMyGeoJson(), {showHidden: false, depth: null}));
 
-        _pgdao.buildParc( [1, 2] );
+    _pgdao.buildParc(1, function (coi) {
+        console.log("\n\n True END : " + coi.toMyGeoJson());
         res.send(coi.toMyGeoJson());
 
-        /*
 
-        result = JSON.stringify(sqlResult.rows); //todo : to geojson !! (featureCollection)
-
-        console.log("sending back : " + result);
-        res.send(result);
-        */
     });
+
+
+    /*
+
+     result = JSON.stringify(sqlResult.rows); //todo : to geojson !! (featureCollection)
+
+     console.log("sending back : " + result);
+     res.send(result);
+     */
+
 });
 
 // TODO: AIR QUALITY (AQI & color)
-router.post('/getAirQuality', function(req, res){
-  if (req.body && req.body['lat'] && req.body['lon']){
-      var lat = req.body['lat'];
-      var lon = req.body['lon'];
+router.post('/getAirQuality', function (req, res) {
+    if (req.body && req.body['lat'] && req.body['lon']) {
+        var lat = req.body['lat'];
+        var lon = req.body['lon'];
 
-      lib.airQualityRequest(lat, lon, function (result) {
-          // Formattion the result
-          result['aqi'] = result['breezometer_aqi'];
-          result['color'] = result['breezometer_color'];
-          result['lat'] = lat;
-          result['lon'] = lon;
-          delete result['breezometer_aqi'];
-          delete result['breezometer_color'];
+        lib.airQualityRequest(lat, lon, function (result) {
+            // Formattion the result
+            result['aqi'] = result['breezometer_aqi'];
+            result['color'] = result['breezometer_color'];
+            result['lat'] = lat;
+            result['lon'] = lon;
+            delete result['breezometer_aqi'];
+            delete result['breezometer_color'];
 
-          result =  GeoJson.parse(result, {Point: ['lat', 'lon']});
+            result = GeoJson.parse(result, {Point: ['lat', 'lon']});
 
-          console.log('AQI : ', result);
-          res.status(200).send(result);
-      }, function (err) {
-          console.log('Erreur get Air Quality ! ', err);
-          res.status(500).send();
-      });
-  } else {
-      console.log('Bad request latitude and/or longitude not provided ! ', err);
-      res.status(400).send();
-  }
+            console.log('AQI : ', result);
+            res.status(200).send(result);
+        }, function (err) {
+            console.log('Erreur get Air Quality ! ', err);
+            res.status(500).send();
+        });
+    } else {
+        console.log('Bad request latitude and/or longitude not provided ! ', err);
+        res.status(400).send();
+    }
 
 });
 
 // TODO: Weather
-router.post('/getWeather', function(req, res){
-    if (req.body && req.body['lat'] && req.body['lon']){
+router.post('/getWeather', function (req, res) {
+    if (req.body && req.body['lat'] && req.body['lon']) {
         var lat = req.body['lat'];
         var lon = req.body['lon'];
 
@@ -405,7 +411,7 @@ router.post('/getWeather', function(req, res){
             result['lat'] = lat;
             result['lon'] = lon;
 
-            result =  GeoJson.parse(result, {Point: ['lat', 'lon']});
+            result = GeoJson.parse(result, {Point: ['lat', 'lon']});
 
             console.log('weather : ', result);
             res.status(200).send(result);
@@ -421,8 +427,8 @@ router.post('/getWeather', function(req, res){
 });
 
 // TODO: ELEVATION
-router.post('/getElevation', function(req, res){
-    if (req.body && req.body['lat'] && req.body['lon']){
+router.post('/getElevation', function (req, res) {
+    if (req.body && req.body['lat'] && req.body['lon']) {
         var lat = req.body['lat'];
         var lon = req.body['lon'];
 
@@ -434,7 +440,7 @@ router.post('/getElevation', function(req, res){
             result['lat'] = lat;
             result['lon'] = lon;
 
-            result =  GeoJson.parse(result, {Point: ['lat', 'lon']});
+            result = GeoJson.parse(result, {Point: ['lat', 'lon']});
 
             console.log('elevation : ', result);
             res.status(200).send(result);
@@ -455,7 +461,6 @@ router.post('/getElevation', function(req, res){
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
-
 
 
 // START THE SERVER
