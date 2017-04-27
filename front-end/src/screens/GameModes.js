@@ -27,7 +27,7 @@ class GameModes extends Component {
     ]}
   }
   
-  onModePress = () => {
+  onModePress = (mode) => {
     this.props.navigation.navigate('Levels');
   };
 
@@ -44,7 +44,7 @@ class GameModes extends Component {
 		    leftIcon={{name: item.icon, color: '#ffa000'}}
 		    containerStyle={styles.listItem}
 		    chevronColor='#ffa000'
-         	    onPress = {() => this.onModePress()}
+         	    onPress = {() => this.onModePress(item.title)}
 		    />
 		))
 		}

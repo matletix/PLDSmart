@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet,
 	 View,
+	 ScrollView,
 	 Text,
        } from 'react-native';
 import { List,
@@ -35,7 +36,7 @@ class Levels extends Component {
 	listLevels = [...listLevels, level]
     }
     return (
-	<View style={styles.container}>
+	<ScrollView style={styles.container}>
 	<Text style={styles.title}>Choisissez un niveau de difficulté</Text>
 	<Text style={styles.description}>Les niveaux supérieurs sont débloqués au fur et à mesure de la progression dans les niveaux précédents.</Text>
 	<List containerStyle={styles.listContainer}>
@@ -54,8 +55,8 @@ class Levels extends Component {
 		/>
 	    )})
 	}
-      </List>
-	</View>
+	</List>
+	</ScrollView>
     )
   }
 }

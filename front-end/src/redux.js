@@ -35,6 +35,7 @@ export const dispatchAction = {
 
 // Initial state of the store
 const initialState = {
+  api_key: 'AIzaSyCZzFP9IPRM4YgAxXfMLVzauDMKCNAVYbE',
   token: '',
   username: '',
   password: '',
@@ -47,15 +48,6 @@ const initialState = {
   levelMax: 1,
   totalLevels: 5,
   courses: [
-    {
-      level: 1,
-      id_course: 1,
-      theme: 'La Tête d\'Or',
-      image: 'localhost..',
-      story_course: 'Découvrez le parc de la Tête d\'Or, passez devant le Musée d\'Art Contemporain et traversez le Zoo de Lyon',
-      duration: '1h14',
-      distance: 6.0,
-    },
     {
       level: 1,
       id_course: 2,

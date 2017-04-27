@@ -1,6 +1,7 @@
 import React from 'react';
 import { DrawerNavigator, StackNavigator } from 'react-navigation';
 
+import Course from './screens/Course';
 import Courses from './screens/Courses';
 import GameModes from './screens/GameModes';
 import Home from './screens/Home';
@@ -31,6 +32,9 @@ const Root = StackNavigator({
   },
   Courses: {
     screen: Courses,
+  },
+  Course: {
+    screen: Course,
   },
   Profile: {
     screen: Profile,

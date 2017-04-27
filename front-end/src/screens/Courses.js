@@ -25,6 +25,10 @@ class Courses extends Component {
     title: "Parcours niveau "+navigation.state.params.level,
   })
   
+  onPressSelect = (course) => {
+    this.props.navigation.navigate('Course', {course})
+  }
+  
   render() {
     return (
 	<ScrollView style={styles.container}>
@@ -44,7 +48,8 @@ class Courses extends Component {
 		<Text style={styles.distance}>Distance: {item.distance} km</Text>
 		<Text style={styles.duree}>Duree: {item.duration}</Text>
 	      <Divider style={styles.divider} />
-	      <Button title='Sélectionner' raised buttonStyle={styles.button}/>
+	      <Button title='Sélectionner' raised buttonStyle={styles.button}
+	    onPress={() => this.onPressSelect(item)}/>
 		</Card>
 	    ))
 	}
