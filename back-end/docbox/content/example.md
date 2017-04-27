@@ -482,6 +482,103 @@ Property | Description
 ]
 ```
 
+### Get parcours : Specific
+
+With this endpoint, you can get every COI of a parcours.
+
+```endpoint
+POST http://localhost:8080/api/getParcours/Specific
+```
+
+#### Example request
+
+```curl
+curl -X POST --data {"token":"qposifqspof", "id_course":5557} https://localhost:8080/api/getParcours/Specific
+```
+
+
+#### Example request body
+
+```json
+{
+  "token" : "aqqf54",
+  "id_course" : 5,
+}
+```
+
+Property | Description
+---|---
+`token` |  access token
+`id_course` | identifier of the Parcours
+
+#### Example response
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.834414,
+          45.82862
+        ]
+      },
+      "properties": {
+        "id": 1,
+        "type": "PATRIMOINE_CULTUREL",
+        "type_detail": "",
+        "nom": "l'espace nature",
+        "adresse": "Espace nature Aquaria",
+        "codepostal": 69660,
+        "commune": "Collonges-au-Mon",
+        "telephone": "0478220212",
+        "email": "",
+        "siteweb": "http://www.collongesaumontdor.fr",
+        "ouverture": "",
+        "tarifsenclair": "Gratuit",
+        "tarifsmin": 0,
+        "tarifsmax": 0,
+        "date_creation": "2011-03-11T14:05:18.000Z",
+        "last_update": "2016-04-20T04:22:11.000Z",
+        "last_update_fme": "2017-03-15T23:15:34.000Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.834414,
+          45.82862
+        ]
+      },
+      "properties": {
+        "id": 3,
+        "type": "PATRIMOINE_CULTUREL",
+        "type_detail": "",
+        "nom": "l'espace nature",
+        "adresse": "Espace nature Aquaria",
+        "codepostal": 69660,
+        "commune": "Collonges-au-Mon",
+        "telephone": "0478220212",
+        "email": "",
+        "siteweb": "http://www.collongesaumontdor.fr",
+        "ouverture": "",
+        "tarifsenclair": "Gratuit",
+        "tarifsmin": 0,
+        "tarifsmax": 0,
+        "date_creation": "2011-03-11T14:05:18.000Z",
+        "last_update": "2016-04-20T04:22:11.000Z",
+        "last_update_fme": "2017-03-15T23:15:34.000Z"
+      }
+    }
+  ]
+}
+```
+
 ## Tests
 
 ### Get geoPoints

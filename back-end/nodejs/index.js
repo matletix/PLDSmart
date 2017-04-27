@@ -333,6 +333,7 @@ router.post('/getParcours/Specific', function (req, res) {
      WHERE c.id_course = 1
      ORDER BY  c.position_in_course;
      */
+    console.log(req.body);
     const id_course = req.body.id_course;
     console.log("Asking for course id : " + id_course);
 
