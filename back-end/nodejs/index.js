@@ -7,6 +7,10 @@ var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
 var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var geoJson = require('geojson-tools');
+const util = require('util');
+
+var rp = require('request-promise');
+var GeoJson = require('geojson');
 
 const OO_Coi = require('./OO_Coi.js');
 const OO_Parcours = require('./OO_Parcours');
@@ -15,11 +19,10 @@ var pgDAO = require('./pgDAO.js');
 var Table = require('./Table.js');
 var lib = require('./lib.js');
 
-var rp = require('request-promise');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 var port = process.env.PORT || 8080;        // set our port
@@ -49,24 +52,24 @@ var router = express.Router();              // get an instance of the express Ro
 // middleware to use for all requests
 // This is executed when receiving any request
 // This allows to make validations
-router.use(function(req, res, next) {
+router.use(function (req, res, next) {
     // do logging
     console.log('This route requires a token!');
     // here the tokens are considered for posts and gets only
     var token = req.body.token || req.query.token;
-    if (token === "dev"){
+    if (token === "dev") {
         console.log('DEV TOKEN');
         next();
     } //todo : for dev only !!
-    else if (token){
-      jwt.verify(token, '+super**Secret!', function(err, decoded) {
-          if (err) {
-            return res.status(401).send({error: 'INVALID TOKEN'});
-          } else {
-            console.log('VALID TOKEN');
-            next();
-          }
-      });
+    else if (token) {
+        jwt.verify(token, '+super**Secret!', function (err, decoded) {
+            if (err) {
+                return res.status(401).send({error: 'INVALID TOKEN'});
+            } else {
+                console.log('VALID TOKEN');
+                next();
+            }
+        });
 
     } else {
         return res.status(401).send({error: 'NO TOKEN PROVIDED'});
@@ -324,44 +327,165 @@ router.post('/getParcours/Level', function(req, res){
     });
 });
 
-router.post('/getParcours/Specific', function(req, res){
+
+router.post('/getParcours/Specific', function (req, res) {
     /*
      SELECT * FROM course_coi c
      JOIN centers_of_interest coi ON C.id_coi = coi.id
      WHERE c.id_course = 1
      ORDER BY  c.position_in_course;
      */
+    console.log(req.body);
     const id_course = req.body.id_course;
     console.log("Asking for course id : " + id_course);
 
     const _pgdao = new pgDAO();
-    _pgdao.getCourseSpecific(req.body, function(sqlResult){
 
-        var coi = new OO_Coi(8585, 'name', 1.5, 10.2);
-        var coi2 = new OO_Coi(9000, 'name2', 1.8, 12.1);
+    var coi = new OO_Coi(8585, 'name', 1.5, 10.2);
+    var coi2 = new OO_Coi(9000, 'name2', 1.8, 12.1);
 
 
-        var parc1 = new OO_Parcours(5, "parc5", "st5", 1, [coi]);
-        parc1.addCoi(coi2);
+    var parc1 = new OO_Parcours(5, "parc5", "st5", 1, [coi]);
+    parc1.addCoi(coi2);
+    //console.log("-> -> " + util.inspect(parc1.toMyGeoJson(), {showHidden: false, depth: null}));
 
-        _pgdao.buildParc( [1, 2] );
+    _pgdao.buildParc(1, function (coi) {
+        console.log("\n\n True END : " + coi.toMyGeoJson());
         res.send(coi.toMyGeoJson());
 
-        /*
 
-        result = JSON.stringify(sqlResult.rows); //todo : to geojson !! (featureCollection)
-
-        console.log("sending back : " + result);
-        res.send(result);
-        */
     });
+
+
+    /*
+
+     result = JSON.stringify(sqlResult.rows); //todo : to geojson !! (featureCollection)
+
+     console.log("sending back : " + result);
+     res.send(result);
+     */
+
 });
 
+// TODO: AIR QUALITY (AQI & color)
+router.post('/getAirQuality', function (req, res) {
+    if (req.body && req.body['lat'] && req.body['lon']) {
+        var lat = req.body['lat'];
+        var lon = req.body['lon'];
+
+        lib.airQualityRequest(lat, lon, function (result) {
+            // Formattion the result
+            result['aqi'] = result['breezometer_aqi'];
+            result['color'] = result['breezometer_color'];
+            result['lat'] = lat;
+            result['lon'] = lon;
+            delete result['breezometer_aqi'];
+            delete result['breezometer_color'];
+
+            result = GeoJson.parse(result, {Point: ['lat', 'lon']});
+
+            console.log('AQI : ', result);
+            res.status(200).send(result);
+        }, function (err) {
+            console.log('Erreur get Air Quality ! ', err);
+            res.status(500).send();
+        });
+    } else {
+        console.log('Bad request latitude and/or longitude not provided ! ', err);
+        res.status(400).send();
+    }
+
+});
+
+// TODO: Weather
+router.post('/getWeather', function (req, res) {
+    if (req.body && req.body['lat'] && req.body['lon']) {
+        var lat = req.body['lat'];
+        var lon = req.body['lon'];
+
+        lib.weatherRequest(lat, lon, function (response) {
+            // Formattion the result
+            var result = {};
+            console.log('api weather response : ', response);
+            result['main'] = response['main'];
+            result['weather'] = response['weather'];
+            result['wind'] = response['wind'];
+
+            result['lat'] = lat;
+            result['lon'] = lon;
+
+            result = GeoJson.parse(result, {Point: ['lat', 'lon']});
+
+            console.log('weather : ', result);
+            res.status(200).send(result);
+
+        }, function (err) {
+            console.log('Erreur get weather ! ', err);
+            res.status(500).send();
+        });
+    } else {
+        console.log('Bad request latitude and/or longitude not provided ! ', err);
+        res.status(400).send();
+    }
+});
+
+// TODO: ELEVATION
+router.post('/getElevation', function (req, res) {
+    if (req.body && req.body['lat'] && req.body['lon']) {
+        var lat = req.body['lat'];
+        var lon = req.body['lon'];
+
+        lib.elevationRequest(lat, lon, function (response) {
+            // Formattion the resul
+            console.log('Elevation api result : ', response);
+            var result = {};
+            result['elevation'] = response['elevationProfile'][0]['height'];
+            result['lat'] = lat;
+            result['lon'] = lon;
+
+            result = GeoJson.parse(result, {Point: ['lat', 'lon']});
+
+            console.log('elevation : ', result);
+            res.status(200).send(result);
+
+        }, function (err) {
+            console.log('Erreur get elevation ! ', err);
+            res.status(500).send();
+        });
+    } else {
+        console.log('Bad request latitude and/or longitude not provided ! ', err);
+        res.status(400).send();
+    }
+});
+
+
+// TODO: User information update (nb points, level)
+router.post('/updateUserInfo', function(req, res){
+    // Format the params
+    var who = req.body['who'] || {};
+    var what = req.body['what'] || {};
+
+    var set_params = Object.assign({}, lib.userUpdateTemplate);
+    set_params = lib.format(what, set_params);
+
+    var where_params = Object.assign({}, lib.userUpdateTemplate);
+    where_params = lib.format(who, where_params);
+
+    var _pgdao = new pgDAO([new Table('user_data', ['pseudo'])]);
+
+    _pgdao.update(set_params, where_params, function () {
+        console.log('Informations utilisateur mises à jour');
+        res.status(200).send();
+    }, function (err) {
+        console.log('Erreur, mise à jour Informations utilisateur ', err);
+        res.status(500).send();
+    });
+
+});
 
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);
-
 
 
 // START THE SERVER

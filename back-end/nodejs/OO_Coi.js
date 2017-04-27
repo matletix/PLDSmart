@@ -35,7 +35,7 @@ class OO_Coi {
         let output =  GeoJson.parse(this, {Point: ['lat', 'lng']});
         //console.log(this.id);
         //console.log(output);
-        return JSON.stringify(output);
+        return output;
     }
 }
 
