@@ -2,12 +2,15 @@
 // =============================================================================
 /*jshint esversion: 6 */
 // call the packages we need
-var express = require('express');        // call express
-var app = express();                 // define our app using express
+var express    = require('express');        // call express
+var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
-var jwt = require('jsonwebtoken'); // used to create, sign, and verify tokens
+var jwt    = require('jsonwebtoken'); // used to create, sign, and verify tokens
 var geoJson = require('geojson-tools');
 const util = require('util');
+
+var rp = require('request-promise');
+var GeoJson = require('geojson');
 
 const OO_Coi = require('./OO_Coi.js');
 const OO_Parcours = require('./OO_Parcours');
@@ -16,8 +19,6 @@ var pgDAO = require('./pgDAO.js');
 var Table = require('./Table.js');
 var lib = require('./lib.js');
 
-var rp = require('request-promise');
-var GeoJson = require('geojson');
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -35,14 +36,14 @@ const pool = require('./db.js');
 //after we're done nothing has to be taken care of
 //we don't have to return any client to the pool or close a connection
 /*
- pool.query('SELECT $1::int AS number', ['2'], function(err, res) {
- if(err) {
- return console.error('error running query', err);
- }
+pool.query('SELECT $1::int AS number', ['2'], function(err, res) {
+  if(err) {
+    return console.error('error running query', err);
+  }
 
- console.log('number:', res.rows[0].number);
- });
- */
+  console.log('number:', res.rows[0].number);
+});
+*/
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -80,27 +81,27 @@ router.use(function (req, res, next) {
 // API routes
 
 // Just to test the user account creation
-app.get('/signuptest', function (req, res) {
+app.get('/signuptest', function(req, res) {
 
 
 });
 
-app.post('/authentificate', function (req, res) {
+app.post('/authentificate', function(req, res) {
 
 
     var tables = [];
     tables.push(new Table('user_data', ['pseudo']));
     var _pgdao = new pgDAO(tables);
     // Define what to do with the result
-    var resultCallback = function (resSQL) {
+    var resultCallback = function(resSQL){
 
         var existInSql = false;
         console.log('row:', resSQL.rows.length);
-        if (resSQL.rows.length.toString() === "1") {
+        if(resSQL.rows.length.toString() === "1") {
             existInSql = true;
         }
 
-        if (existInSql) {
+        if(existInSql){
             console.log("EXIST");
             var userinfo = resSQL.rows[0];
 
@@ -114,13 +115,13 @@ app.post('/authentificate', function (req, res) {
             res.status(200).send(userinfo);
         } else {
             console.log("DON T EXIST");
-            res.status(401).send({error: "Unauthorized :("});
+            res.status(401).send({ error: "Unauthorized :(" });
         }
     };
     // Call the count function
     _pgdao.findAll({'pseudo': req.body.pseudo, 'mdp': req.body.mdp}, resultCallback);
 
-});
+}) ;
 
 
 // End point to add getting one Feature to insert into the database
@@ -129,17 +130,17 @@ router.post('/grandLyonDataAddOneFeature', function (req, res) {
     console.log('Adding a new center of interest');
     var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
 
-    if (grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL') {
+    if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
         // Formatting grand Lyon data
         var _params = lib.formatgl(grandLyonData, lib.template);
         console.log(_params);
         // Insert the object to the data base
         // Define the result callback function
-        var resultCallback = function () {
+        var resultCallback = function(){
             console.log('INSERE !');
             res.status(200).send();
         };
-        var errorCallback = function () {
+        var errorCallback = function(){
             console.log('Error: grandLyonDataAddOneFeature');
             res.status(500).send();
         }
@@ -177,14 +178,14 @@ router.post('/grandLyonDataAddFeatures', function (req, res) {
         console.log('RESULT GRAND LYON : ', result);
         console.log('Adding a new center of interest');
         var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
-        for (let grandLyonData of result['features']) {
-            if (grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL') {
+        for(let grandLyonData of result['features']){
+            if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
                 // Formatting grand Lyon data
                 var _params = lib.formatgl(grandLyonData, lib.template);
                 console.log(_params);
                 // Insert the object to the data base
                 // Define the result callback function
-                var resultCallback = function () {
+                var resultCallback = function(){
                     console.log('INSERE !');
                     res.status(200).send();
                 };
@@ -244,7 +245,7 @@ router.post('/addCourse', function (req, res) {
     _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
 
     // Add the cois to the database
-    for (let coi of cois) {
+    for (let coi of cois){
 
         _params = lib.format(coi, lib.template_insert_coi);
 
@@ -288,7 +289,7 @@ router.post('/get_Course_coi_content', function (req, res) {
 });
 
 // TODO : dev only
-router.post('/get_course_content', function (req, res) {
+router.post('/get_course_content', function(req, res){
 
     var _pgdao = new pgDAO([new Table('course', ['id_course', 'niveau'])]);
 
@@ -303,7 +304,7 @@ router.post('/get_course_content', function (req, res) {
 });
 
 // TODO : dev only
-router.get('/getTestDatas', function (req, res) {
+router.get('/getTestDatas', function(req, res){
     console.log('Returning test datas');
     const array = [
         [45.76263, 4.823473], //Fourvière
@@ -314,17 +315,18 @@ router.get('/getTestDatas', function (req, res) {
     res.json(geoJson.toGeoJSON(array, 'multipoint'));
 });
 
-router.post('/getParcours/Level', function (req, res) {
+router.post('/getParcours/Level', function(req, res){
     const level = req.body.level;
     console.log("Asking for parcours with level <= " + req.body.level);
     const _pgdao = new pgDAO([new Table('course')]);
-    _pgdao.getCoursesLevelInf(req.body, function (sqlResult) {
+    _pgdao.getCoursesLevelInf(req.body, function(sqlResult){
         result = JSON.stringify(sqlResult.rows);
 
         console.log("sending back : " + result);
         res.send(result);
     });
 });
+
 
 router.post('/getParcours/Specific', function (req, res) {
     /*
