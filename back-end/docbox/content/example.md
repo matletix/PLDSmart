@@ -47,6 +47,52 @@ Property | Description
 }
 ```
 
+### Update user information
+
+This allows to update users information.
+
+Property | Description/Subproperties
+---|---
+`who`| specify the users you want to update their information
+`what`| specify the value of the attributes to be updated
+
+The properties of `who` and `what` can be one of this list : `pseudo`, `age`, `poids`, `sexe`, `email`, `level`, `mdp`, `points`
+
+
+Sends back status code 200 if everything is OK, or status code 500 if anything goes wrong on the server.
+
+```endpoint
+POST http://localhost:8080/api/updateUserInfo
+```
+
+#### Example request
+
+```curl
+curl -X POST --data { "token": "token value", "who": { "pseudo": "toto"	}, "what": { "level": "3", "points": "50" } } https://localhost:8080/api/updateUserInfo
+```
+
+
+#### Example request body
+
+```json
+{
+	"token": "token value",
+	"who": {
+		"pseudo": "toto"
+	},
+	"what": {
+	    "level": "3",
+	    "points": "50"
+	}
+}
+```
+
+#### Example response
+
+```json
+
+```
+
 ## Centers of interest
 
 ### Add one Grand Lyon geoJson feature
@@ -140,6 +186,165 @@ curl -X POST --data { "token": "token value" } https://localhost:8080/api/grandL
 ```json
 
 ```
+
+### Get the Air Quality Indice of a center of interest
+Given the latitude and the longitude of a COI, this endpoint sends back the AQI and a color representing the AQI. Sends back status code 200 in case everything is OK, status code 400 if the request doesn't include longitude and/or latitude, or status code 500 if an error occurs on the server.
+
+```endpoint
+POST http://localhost:8080/api/getAirQuality
+```
+
+#### Example request
+
+```curl
+curl -X POST --data { "token": "token value", "lat": "45.76263", "lon": "4.823473" } https://localhost:8080/api/getAirQuality
+```
+
+
+#### Example request body
+
+```json
+{
+	"token": "token value",
+	"lat": "45.76263",
+	"lon": "4.823473"
+}
+```
+
+
+#### Example response
+
+```json
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      4.823473,
+      45.76263
+    ]
+  },
+  "properties": {
+    "datetime": "20170425T13:58:05",
+    "aqi": 69,
+    "color": "#8AD130"
+  }
+}
+
+```
+
+
+### Get the weather at a specific center of interest
+Given the latitude and the longitude of a COI, this endpoint sends back the weather. Sends back status code 200 in case everything is OK, status code 400 if the request doesn't include longitude and/or latitude, or status code 500 if an error occurs on the server.
+
+```endpoint
+POST http://localhost:8080/api/getWeather
+```
+
+#### Example request
+
+```curl
+curl -X POST --data { "token": "token value", "lat": "45.76263", "lon": "4.823473" }  https://localhost:8080/api/getWeather
+```
+
+
+#### Example request body
+
+```json
+{
+	"token": "token value",
+	"lat": "45.76263",
+	"lon": "4.823473"
+}
+```
+
+
+#### Example response
+
+```json
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      4.823473,
+      45.76263
+    ]
+  },
+  "properties": {
+    "main": {
+      "temp": 12.02,
+      "pressure": 1008,
+      "humidity": 93,
+      "temp_min": 11,
+      "temp_max": 14
+    },
+    "weather": [
+      {
+        "id": 501,
+        "main": "Rain",
+        "description": "moderate rain",
+        "icon": "10d"
+      },
+      {
+        "id": 701,
+        "main": "Mist",
+        "description": "mist",
+        "icon": "50d"
+      }
+    ],
+    "wind": {
+      "speed": 2.1,
+      "deg": 200
+    }
+  }
+}
+
+```
+
+
+### Get the elevation of a center of interest
+Given the latitude and the longitude of a COI, this endpoint sends back the elevation of the center of interest. Sends back status code 200 in case everything is OK, status code 400 if the request doesn't include longitude and/or latitude, or status code 500 if an error occurs on the server.
+
+```endpoint
+POST http://localhost:8080/api/getElevation
+```
+
+#### Example request
+
+```curl
+curl -X POST --data { "token": "token value", "lat": "45.76263", "lon": "4.823473" } https://localhost:8080/api/getElevation
+```
+
+
+#### Example request body
+
+```json
+{
+	"token": "token value",
+	"lat": "45.76263",
+	"lon": "4.823473"
+}
+```
+
+
+#### Example response
+
+```json
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      4.823473,
+      45.76263
+    ]
+  },
+  "properties": {
+    "elevation": 275
+  }
+}
+
 
 
 ## Parcours
@@ -277,6 +482,104 @@ Property | Description
   }
 ]
 ```
+ 
+### Get parcours : Specific
+
+With this endpoint, you can get every COI of a parcours.
+
+```endpoint
+POST http://localhost:8080/api/getParcours/Specific
+```
+
+#### Example request
+
+```curl
+curl -X POST --data {"token":"qposifqspof", "id_course":5557} https://localhost:8080/api/getParcours/Specific
+```
+
+
+#### Example request body
+
+```json
+{
+  "token" : "aqqf54",
+  "id_course" : 5,
+}
+```
+
+Property | Description
+---|---
+`token` |  access token
+`id_course` | identifier of the Parcours
+
+#### Example response
+
+```json
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.834414,
+          45.82862
+        ]
+      },
+      "properties": {
+        "id": 1,
+        "type": "PATRIMOINE_CULTUREL",
+        "type_detail": "",
+        "nom": "l'espace nature",
+        "adresse": "Espace nature Aquaria",
+        "codepostal": 69660,
+        "commune": "CollongesauMon",
+        "telephone": "0478220212",
+        "email": "",
+        "siteweb": "http://www.collongesaumontdor.fr",
+        "ouverture": "",
+        "tarifsenclair": "Gratuit",
+        "tarifsmin": 0,
+        "tarifsmax": 0,
+        "date_creation": "20110311T14:05:18.000Z",
+        "last_update": "20160420T04:22:11.000Z",
+        "last_update_fme": "20170315T23:15:34.000Z"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          4.834414,
+          45.82862
+        ]
+      },
+      "properties": {
+        "id": 3,
+        "type": "PATRIMOINE_CULTUREL",
+        "type_detail": "",
+        "nom": "l'espace nature",
+        "adresse": "Espace nature Aquaria",
+        "codepostal": 69660,
+        "commune": "CollongesauMon",
+        "telephone": "0478220212",
+        "email": "",
+        "siteweb": "http://www.collongesaumontdor.fr",
+        "ouverture": "",
+        "tarifsenclair": "Gratuit",
+        "tarifsmin": 0,
+        "tarifsmax": 0,
+        "date_creation": "20110311T14:05:18.000Z",
+        "last_update": "20160420T04:22:11.000Z",
+        "last_update_fme": "20170315T23:15:34.000Z"
+      }
+    }
+  ]
+}
+```
+
 
 ## Tests
 
