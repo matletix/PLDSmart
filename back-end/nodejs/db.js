@@ -1,5 +1,9 @@
 const pg = require('pg');
 
+var log4js = require( "log4js" );
+log4js.configure( "./config/log4js.json" );
+var logger = log4js.getLogger( "file-appender" );
+
 // create a config to configure both pooling behavior
 // and client options
 // note: all config is optional and the environment variables
@@ -31,7 +35,7 @@ pool.on('error', function (err, client) {
 
 //export the query method for passing queries to the pool
 module.exports.query = function (text, values, callback) {
-  console.log('query:', text, values);
+  logger.info('query:', text, values);
   return pool.query(text, values, callback);
 };
 

@@ -19,6 +19,11 @@ var pgDAO = require('./pgDAO.js');
 var Table = require('./Table.js');
 var lib = require('./lib.js');
 
+var log4js = require( "log4js" );
+log4js.configure( "./config/log4js.json" );
+var logger = log4js.getLogger( "file-appender" );
+
+
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -54,11 +59,11 @@ var router = express.Router();              // get an instance of the express Ro
 // This allows to make validations
 router.use(function (req, res, next) {
     // do logging
-    console.log('This route requires a token!');
+    logger.info('This route requires a token!');
     // here the tokens are considered for posts and gets only
     var token = req.body.token || req.query.token;
     if (token === "dev") {
-        console.log('DEV TOKEN');
+        logger.info('DEV TOKEN');
         next();
     } //todo : for dev only !!
     else if (token) {
@@ -66,7 +71,7 @@ router.use(function (req, res, next) {
             if (err) {
                 return res.status(401).send({error: 'INVALID TOKEN'});
             } else {
-                console.log('VALID TOKEN');
+                logger.debug('VALID TOKEN');
                 next();
             }
         });
@@ -96,13 +101,13 @@ app.post('/authentificate', function(req, res) {
     var resultCallback = function(resSQL){
 
         var existInSql = false;
-        console.log('row:', resSQL.rows.length);
+        logger.info('row:', resSQL.rows.length);
         if(resSQL.rows.length.toString() === "1") {
             existInSql = true;
         }
 
         if(existInSql){
-            console.log("EXIST");
+            logger.info("EXIST");
             var userinfo = resSQL.rows[0];
 
             // Create a token
@@ -114,7 +119,7 @@ app.post('/authentificate', function(req, res) {
 
             res.status(200).send(userinfo);
         } else {
-            console.log("DON T EXIST");
+            logger.debug("DON T EXIST");
             res.status(401).send({ error: "Unauthorized :(" });
         }
     };
@@ -127,21 +132,21 @@ app.post('/authentificate', function(req, res) {
 // End point to add getting one Feature to insert into the database
 router.post('/grandLyonDataAddOneFeature', function (req, res) {
     var grandLyonData = req.body;
-    console.log('Adding a new center of interest');
+    logger.info('Adding a new center of interest');
     var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
 
     if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
         // Formatting grand Lyon data
         var _params = lib.formatgl(grandLyonData, lib.template);
-        console.log(_params);
+        logger.info(_params);
         // Insert the object to the data base
         // Define the result callback function
         var resultCallback = function(){
-            console.log('INSERE !');
+            logger.info('INSERE !');
             res.status(200).send();
         };
         var errorCallback = function(){
-            console.log('Error: grandLyonDataAddOneFeature');
+            logger.info('Error: grandLyonDataAddOneFeature');
             res.status(500).send();
         }
 
@@ -151,7 +156,7 @@ router.post('/grandLyonDataAddOneFeature', function (req, res) {
 
 // Function that requests the GRAND LYON API
 var grandLyonRequest = function (uri, qs, resFct, errFct) {
-    console.log('Grand Lyon request');
+    logger.info('Grand Lyon request');
     var options = {
         uri: uri,
         qs: qs,
@@ -170,23 +175,23 @@ var grandLyonRequest = function (uri, qs, resFct, errFct) {
 router.post('/grandLyonDataAddFeatures', function (req, res) {
 
     var error = function (err) {
-        console.log('ERROR !', err);
+        logger.info('ERROR !', err);
         res.status(500).send();
     };
 
     var add_CofI_db = function (result) {
-        console.log('RESULT GRAND LYON : ', result);
-        console.log('Adding a new center of interest');
+        logger.info('RESULT GRAND LYON : ', result);
+        logger.info('Adding a new center of interest');
         var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
         for(let grandLyonData of result['features']){
             if(grandLyonData['properties']['type'] === 'PATRIMOINE_CULTUREL'){
                 // Formatting grand Lyon data
                 var _params = lib.formatgl(grandLyonData, lib.template);
-                console.log(_params);
+                logger.info(_params);
                 // Insert the object to the data base
                 // Define the result callback function
                 var resultCallback = function(){
-                    console.log('INSERE !');
+                    logger.info('INSERE !');
                     res.status(200).send();
                 };
 
@@ -216,10 +221,10 @@ router.post('/allCentersOfInterest', function (req, res) {
     var _pgdao = new pgDAO([new Table('centers_of_interest', ['id'])]);
 
     _pgdao.findAll({}, function (result) {
-        console.log('Result sent !');
+        logger.info('Result sent !');
         res.status(200).send(result['rows']);
     }, function (err) {
-        console.log('Erreur Centres d\'intérêts!');
+        logger.debug('Erreur Centres d\'intérêts!');
         res.status(500).send();
     });
 });
@@ -234,10 +239,10 @@ router.post('/addCourse', function (req, res) {
 
 
     _pgdao.insert(_params, function () {
-        console.log('Parcours inséré!');
+        logger.info('Parcours inséré!');
         res.status(200).send();
     }, function (err) {
-        console.log('Erreur, Parcours non inséré! ', err);
+        logger.info('Erreur, Parcours non inséré! ', err);
         res.status(500).send();
     });
 
@@ -250,10 +255,10 @@ router.post('/addCourse', function (req, res) {
         _params = lib.format(coi, lib.template_insert_coi);
 
         _pgdao.insert(_params, function () {
-            console.log('coi inséré!');
+            logger.info('coi inséré!');
             res.status(200).send();
         }, function (err) {
-            console.log('Erreur, coi non inséré! ', err);
+            logger.info('Erreur, coi non inséré! ', err);
             res.status(500).send();
         });
     }
@@ -267,10 +272,10 @@ router.post('/add_COI_to_course', function (req, res) {
     var _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
 
     _pgdao.insert(_params, function () {
-        console.log('coi inséré!');
+        logger.info('coi inséré!');
         res.status(200).send();
     }, function (err) {
-        console.log('Erreur, coi non inséré! ', err);
+        logger.info('Erreur, coi non inséré! ', err);
         res.status(500).send();
     });
 });
@@ -280,10 +285,10 @@ router.post('/get_Course_coi_content', function (req, res) {
     var _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
 
     _pgdao.findAll({}, function (result) {
-        console.log('COIs : ', result["rows"]);
+        logger.info('COIs : ', result["rows"]);
         res.status(200).send(result["rows"]);
     }, function (err) {
-        console.log('Erreur get courses ! ', err);
+        logger.info('Erreur get courses ! ', err);
         res.status(500).send();
     });
 });
@@ -294,10 +299,10 @@ router.post('/get_course_content', function(req, res){
     var _pgdao = new pgDAO([new Table('course', ['id_course', 'niveau'])]);
 
     _pgdao.findAll({}, function (result) {
-        console.log('Courses : ', result["rows"]);
+        logger.info('Courses : ', result["rows"]);
         res.status(200).send(result["rows"]);
     }, function (err) {
-        console.log('Erreur get courses ! ', err);
+        logger.info('Erreur get courses ! ', err);
         res.status(500).send();
     });
 
@@ -305,7 +310,7 @@ router.post('/get_course_content', function(req, res){
 
 // TODO : dev only
 router.get('/getTestDatas', function(req, res){
-    console.log('Returning test datas');
+    logger.info('Returning test datas');
     const array = [
         [45.76263, 4.823473], //Fourvière
         [45.731135, 4.81806], //Confluences
@@ -317,12 +322,12 @@ router.get('/getTestDatas', function(req, res){
 
 router.post('/getParcours/Level', function(req, res){
     const level = req.body.level;
-    console.log("Asking for parcours with level <= " + req.body.level);
+    logger.info("Asking for parcours with level <= " + req.body.level);
     const _pgdao = new pgDAO([new Table('course')]);
     _pgdao.getCoursesLevelInf(req.body, function(sqlResult){
         result = JSON.stringify(sqlResult.rows);
 
-        console.log("sending back : " + result);
+        logger.info("sending back : " + result);
         res.send(result);
     });
 });
@@ -335,9 +340,9 @@ router.post('/getParcours/Specific', function (req, res) {
      WHERE c.id_course = 1
      ORDER BY  c.position_in_course;
      */
-    console.log(req.body);
+    logger.info(req.body);
     const id_course = req.body.id_course;
-    console.log("Asking for course id : " + id_course);
+    logger.info("Asking for course id : " + id_course);
 
     const _pgdao = new pgDAO();
 
@@ -347,10 +352,10 @@ router.post('/getParcours/Specific', function (req, res) {
 
     var parc1 = new OO_Parcours(5, "parc5", "st5", 1, [coi]);
     parc1.addCoi(coi2);
-    //console.log("-> -> " + util.inspect(parc1.toMyGeoJson(), {showHidden: false, depth: null}));
+    //logger.info("-> -> " + util.inspect(parc1.toMyGeoJson(), {showHidden: false, depth: null}));
 
     _pgdao.buildParc(1, function (coi) {
-        console.log("\n\n True END : " + coi.toMyGeoJson());
+        logger.info("\n\n True END : " + coi.toMyGeoJson());
         res.send(coi.toMyGeoJson());
 
 
@@ -384,14 +389,14 @@ router.post('/getAirQuality', function (req, res) {
 
             result = GeoJson.parse(result, {Point: ['lat', 'lon']});
 
-            console.log('AQI : ', result);
+            logger.info('AQI : ', result);
             res.status(200).send(result);
         }, function (err) {
-            console.log('Erreur get Air Quality ! ', err);
+            logger.info('Erreur get Air Quality ! ', err);
             res.status(500).send();
         });
     } else {
-        console.log('Bad request latitude and/or longitude not provided ! ', err);
+        logger.info('Bad request latitude and/or longitude not provided ! ', err);
         res.status(400).send();
     }
 
@@ -406,7 +411,7 @@ router.post('/getWeather', function (req, res) {
         lib.weatherRequest(lat, lon, function (response) {
             // Formattion the result
             var result = {};
-            console.log('api weather response : ', response);
+            logger.info('api weather response : ', response);
             result['main'] = response['main'];
             result['weather'] = response['weather'];
             result['wind'] = response['wind'];
@@ -416,15 +421,15 @@ router.post('/getWeather', function (req, res) {
 
             result = GeoJson.parse(result, {Point: ['lat', 'lon']});
 
-            console.log('weather : ', result);
+            logger.info('weather : ', result);
             res.status(200).send(result);
 
         }, function (err) {
-            console.log('Erreur get weather ! ', err);
+            logger.info('Erreur get weather ! ', err);
             res.status(500).send();
         });
     } else {
-        console.log('Bad request latitude and/or longitude not provided ! ', err);
+        logger.info('Bad request latitude and/or longitude not provided ! ', err);
         res.status(400).send();
     }
 });
@@ -437,7 +442,7 @@ router.post('/getElevation', function (req, res) {
 
         lib.elevationRequest(lat, lon, function (response) {
             // Formattion the resul
-            console.log('Elevation api result : ', response);
+            logger.info('Elevation api result : ', response);
             var result = {};
             result['elevation'] = response['elevationProfile'][0]['height'];
             result['lat'] = lat;
@@ -445,15 +450,15 @@ router.post('/getElevation', function (req, res) {
 
             result = GeoJson.parse(result, {Point: ['lat', 'lon']});
 
-            console.log('elevation : ', result);
+            logger.info('elevation : ', result);
             res.status(200).send(result);
 
         }, function (err) {
-            console.log('Erreur get elevation ! ', err);
+            logger.info('Erreur get elevation ! ', err);
             res.status(500).send();
         });
     } else {
-        console.log('Bad request latitude and/or longitude not provided ! ', err);
+        logger.info('Bad request latitude and/or longitude not provided ! ', err);
         res.status(400).send();
     }
 });
@@ -474,10 +479,10 @@ router.post('/updateUserInfo', function(req, res){
     var _pgdao = new pgDAO([new Table('user_data', ['pseudo'])]);
 
     _pgdao.update(set_params, where_params, function () {
-        console.log('Informations utilisateur mises à jour');
+        logger.info('Informations utilisateur mises à jour');
         res.status(200).send();
     }, function (err) {
-        console.log('Erreur, mise à jour Informations utilisateur ', err);
+        logger.info('Erreur, mise à jour Informations utilisateur ', err);
         res.status(500).send();
     });
 

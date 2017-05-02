@@ -1,5 +1,9 @@
 var rp = require('request-promise');
 
+var log4js = require( "log4js" );
+log4js.configure( "./config/log4js.json" );
+var logger = log4js.getLogger( "file-appender" );
+
 module.exports.template =  {
     "id": 0,
     "id_sitra1": "",
@@ -32,7 +36,7 @@ module.exports.formatgl = function (glFeature, _params) {
             _params[property]["geojson"] = glFeature["geometry"];
         }
     }
-    console.log('GLFeature to params : ', _params);
+    logger.info('GLFeature to params : ', _params);
     return _params;
 };
 
@@ -45,7 +49,7 @@ module.exports.format = function (obj, _params) {
             _params[property]["geojson"] = obj["geometry"];
         }
     }
-    console.log('obj to params : ', _params);
+    logger.info('obj to params : ', _params);
     return _params;
 };
 
@@ -128,7 +132,7 @@ var elevation_api_qs = {
 // The request can contain many points at a time
 module.exports.elevationRequest = function(latitude, longitude, resFct, errFct){
   elevation_api_qs['latLngCollection'] = '' + latitude + ',' + longitude + '';
-  console.log('Request elevation : ', elevation_api_qs);
+  logger.info('Request elevation : ', elevation_api_qs);
   var options = {
       uri: elevation_api_uri,
       qs: elevation_api_qs,

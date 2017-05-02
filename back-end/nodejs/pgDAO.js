@@ -5,6 +5,10 @@ const util = require('util');
 const OO_Coi = require('./OO_Coi.js');
 const OO_Parcours = require('./OO_Parcours');
 
+var log4js = require( "log4js" );
+log4js.configure( "./config/log4js.json" );
+var logger = log4js.getLogger( "file-appender" );
+
 module.exports = pgDAO;
 
 function pgDAO(tables) {
@@ -25,7 +29,7 @@ pgDAO.prototype.buildQuery = function (_params) {
     this._tables.forEach(function (currentValue, index, array) {
         // The tables needed in the request
         tables += currentValue.getName();
-        console.log('Tables ! ' + tab.length);
+        logger.info('Tables ! ' + tab.length);
         if (index < tab.length - 1) {
             tables += ', ';
             var i = 0;
@@ -72,10 +76,10 @@ pgDAO.prototype.buildQuery = function (_params) {
     }
     query = tables + where;
 
-    console.log('Tables : ' + tables);
-    console.log('Keys : ' + keys);
-    console.log('Params : ' + params);
-    console.log('Query : ' + query);
+    logger.info('Tables : ' + tables);
+    logger.info('Keys : ' + keys);
+    logger.info('Params : ' + params);
+    logger.info('Query : ' + query);
 
     return query;
 
@@ -100,7 +104,7 @@ pgDAO.prototype.buildInsertQuery = function (_params) {
     var values = '';
     var index = 0;
     for (let param in _params) {
-        console.log('param ', index, ' : ', param);
+        logger.info('param ', index, ' : ', param);
         columns += param;
         if (_params[param] && _params[param]['geojson'])
             values += 'ST_GeomFromGeoJSON ( \'' + JSON.stringify(_params[param].geojson) + '\' )';
@@ -118,7 +122,7 @@ pgDAO.prototype.buildInsertQuery = function (_params) {
     }
 
     var query = 'INSERT INTO ' + this._tables[0].getName() + '(' + columns + ') VALUES (' + values + ')';
-    console.log('INSERT query: ', query);
+    logger.info('INSERT query: ', query);
     return query;
 };
 
@@ -130,7 +134,7 @@ pgDAO.prototype.insert = function (_params, resultCallback, errorCallback) {
 };
 
 pgDAO.prototype.executeQuery = function (query, _params, resultCallback, errorCallback) {
-    console.log('executing : ' + query);
+    logger.info('executing : ' + query);
     pool.query(query, [], function (errSQL, resSQL) {
 
         if (errSQL) {
@@ -143,7 +147,7 @@ pgDAO.prototype.executeQuery = function (query, _params, resultCallback, errorCa
 };
 
 pgDAO.prototype.getCoursesLevelInf = function (_params, resultCallback, errorCallback) {
-    console.log("Requesting parcours with level <= " + _params.level);
+    logger.info("Requesting parcours with level <= " + _params.level);
     pool.query('SELECT * FROM course WHERE level <= $1::int', [_params.level], function (errSQL, resSQL) {
 
         if (errSQL) {
@@ -156,7 +160,7 @@ pgDAO.prototype.getCoursesLevelInf = function (_params, resultCallback, errorCal
 };
 
 pgDAO.prototype.getCourse = function (id, callback) {
-    console.log("Requesting parcours with id = " + id);
+    logger.info("Requesting parcours with id = " + id);
     pool.query('SELECT * FROM course WHERE id_course = $1::int', [id], function (errSQL, resSQL) {
 
         if (errSQL) {
@@ -168,11 +172,11 @@ pgDAO.prototype.getCourse = function (id, callback) {
 };
 
 pgDAO.prototype.getCourseSpecific = function (_params, resultatCallback, errorCallback) {
-    console.log("SQL - requesting parcours id : " + _params.id_course);
+    logger.info("SQL - requesting parcours id : " + _params.id_course);
     pool.query('     SELECT * FROM course_coi c JOIN centers_of_interest coi ON C.id_coi = coi.id \
                     WHERE c.id_course = $1::int \
                     ORDER BY  c.position_in_course;', [_params.id_course], function (errSQL, resSQL) {
-        //console.log(resSQL);
+        //logger.info(resSQL);
         if (errSQL) {
             if (errorCallback) errorCallback(errSQL);
             return console.error('error running query', errSQL);
@@ -189,24 +193,24 @@ getCOI = function (id_coi) {
      siteweb, ouverture, tarifsenclair, tarifsmin, tarifsmax,date_creation, last_update, last_update_fme
      FROM centers_of_interest WHERE id = 1;
      */
-    console.log("SQL - requesting coi id : " + id_coi);
+    logger.info("SQL - requesting coi id : " + id_coi);
     return new Promise(function (resolve, reject) {
         pool.query('SELECT *, ST_AsGeoJSON(coordinates) FROM centers_of_interest \
                     WHERE id = $1::int;', [id_coi], function (errSQL, resSQL) {
-            //console.log(resSQL);
+            //logger.info(resSQL);
             if (errSQL) {
                 return console.error('error running query', errSQL);
             }
-            //console.log("return : " + resSQL);
+            //logger.info("return : " + resSQL);
 
-            //console.log("sql rows : " + util.inspect(res.rows[0], {showHidden: false, depth: null}));
+            //logger.info("sql rows : " + util.inspect(res.rows[0], {showHidden: false, depth: null}));
             var row = resSQL.rows[0];
-            //console.log(JSON.parse(row.st_asgeojson).coordinates);
+            //logger.info(JSON.parse(row.st_asgeojson).coordinates);
             var coi = new OO_Coi(row.id, row.id_sitra, row.type, row.type_detail, row.nom, row.adresse, row.codepostal,
                 row.commune, row.telephone, row.email, row.siteweb, row.ouverture, row.tarifsenclair, row.tarifsmin, row.tarifsmax,
                 row.date_creation, row.last_update, row.last_update_fme, JSON.parse(row.st_asgeojson).coordinates[1],
                 JSON.parse(row.st_asgeojson).coordinates[0]);
-            //console.log(coi.toMyGeoJson());
+            //logger.info(coi.toMyGeoJson());
             resolve(coi);
         });
         //return 1;
@@ -216,25 +220,25 @@ getCOI = function (id_coi) {
 pgDAO.prototype.buildParc = function (id_parcours, callback) {
 
     this.getParcoursCois(id_parcours).then(function(ids_coi) {
-        //console.log(ids_coi);
+        //logger.info(ids_coi);
         var promises = [];
         for (let i in ids_coi) {
-            //console.log(ids_coi[i]);
+            //logger.info(ids_coi[i]);
             promises.push(getCOI(ids_coi[i]));
         }
 
         Promise.all(promises).then(function (data) {
             var parcours = new OO_Parcours(5, "parc5", "st5", 1, []);
-            //console.log(parcours.toMyGeoJson());
-            //console.log('-----------------');
-            //console.log("length : " + data.length);
-            //console.log(data[0].nom);
+            //logger.info(parcours.toMyGeoJson());
+            //logger.info('-----------------');
+            //logger.info("length : " + data.length);
+            //logger.info(data[0].nom);
             for (let i = 0; i < data.length; i++) {
-                //console.log(data[i]);
+                //logger.info(data[i]);
                 parcours.addCoi(data[i]);
             }
 
-            //console.log("END : " + util.inspect(parcours.toMyGeoJson(), {showHidden: false, depth: null}));
+            //logger.info("END : " + util.inspect(parcours.toMyGeoJson(), {showHidden: false, depth: null}));
             callback (parcours);
         }, function (err) {
             // error occurred
@@ -250,16 +254,16 @@ pgDAO.prototype.getParcoursCois = function (id_course) {
             FROM course_coi \
             WHERE id_course = $1::int \
             ORDER BY position_in_course;', [id_course], function (errSQL, infos_course) {
-            //console.log(resSQL);
+            //logger.info(resSQL);
             if (errSQL) {
                 return console.error('error running query', errSQL);
             }
-            //console.log(infos_course);
+            //logger.info(infos_course);
 
             var ids_coi = [];
             for (let i in infos_course.rows) {
                 let id_coi = infos_course.rows[i].id_coi;
-                //console.log(id_coi);
+                //logger.info(id_coi);
                 ids_coi.push(id_coi);
             }
             resolve(ids_coi);
@@ -298,7 +302,7 @@ pgDAO.prototype.buildUpdateQuery = function (set_params, where_params) {
     }
 
     var query = 'UPDATE ' + this._tables[0].getName() + ' SET ' + set + ' WHERE ' + where;
-    console.log('Update query : ', query);
+    logger.info('Update query : ', query);
     return query;
 };
 
@@ -311,6 +315,6 @@ pgDAO.prototype.update = function (set_params, where_params, resultCallback, err
 
 /*
  this.createCOI(id, function(res){
- console.log("=====" + util.inspect(res, {showHidden: false, depth: null}));
+ logger.info("=====" + util.inspect(res, {showHidden: false, depth: null}));
  })
  */
