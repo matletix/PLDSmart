@@ -23,6 +23,8 @@ const mapStateToProps = (state) => ({
     levelMax: state.levelMax,
     token: state.token,
     pseudo: state.pseudo,
+    nb_cois_validated: state.nb_cois_validated,
+
 
 })
 
@@ -48,13 +50,13 @@ onSuccess = async (e) => {
 
       // test that the qrCode is good
       if (e.data === qrcontent){
-          // increment the number of cois validated for this course
-          // {course: 1, level: 1}
+
           this.props.dispatch(dispatchAction.up_nb_cois_course(coi.properties.id_course, coi.properties.level));
+
           // Test if the coi is the last one in the course
             // Get the course nb of cois
             const course = this.props.courseValidation.find(function (course) {
-                return course.course === coi.properties.id_course && course.level === coi.properties.level;
+                return course.id_course === coi.properties.id_course && course.level === coi.properties.level;
             });
             console.log(' -------------- COI ----------------')
             console.log(course)
@@ -70,12 +72,17 @@ onSuccess = async (e) => {
             })
             const nb_cois = cois.length;
 
-            
             console.log('------------------ cois : nb_cois -----------------------')
             console.log(cois + ' : ' + nb_cois)
 
-            console.log({token: this.props.token, id_course: course.course , level: course.level , nb_cois: nb_cois, pseudo: this.props.pseudo});
+            console.log({token: this.props.token, id_course: course.id_course , level: course.level , nb_cois: nb_cois, pseudo: this.props.pseudo});
 
+            // increment the number of cois validated for this course
+            // {course: 1, level: 1}
+
+            this.props.dispatch(dispatchAction.set_nb_cois_validated(course.nb_cois));
+            console.log('----------------- nb_cois_validated ---------------')
+            console.log(this.props.nb_cois_validated)
 
             if (course.nb_cois === nb_cois){
                 console.log('------------------- course completed -----------------------------');
@@ -89,7 +96,7 @@ onSuccess = async (e) => {
                       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', },
                       body: JSON.stringify({
                           token: this.props.token,
-                          id_course: course.course,
+                          id_course: course.id_course,
                           level: course.level,
                           nb_cois: nb_cois,
                           pseudo: this.props.pseudo

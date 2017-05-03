@@ -162,7 +162,7 @@ class Login extends Component {
 			const courses = await response.json();
 			dispatch(dispatchAction.set_validation_courses(courses));
 			console.log('--------- Validation courses ---------------')
-			console.log(this.props.pseudo + ' : ' + courses);
+			console.log(this.props.pseudo + ' : ' + JSON.stringify(this.props.courseValidation));
 		} else {
 			// TODO: Inform the user
 			console.log("Getting completed courses FAILED");

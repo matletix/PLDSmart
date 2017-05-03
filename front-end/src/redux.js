@@ -16,6 +16,7 @@ export const types = {
   SET_NB_COIS_COURSE_SELECTED: 'SET_NB_COIS_COURSE_SELECTED',
   SET_NB_COURSES_LEVEL_SELECTED: 'SET_NB_COURSES_LEVEL_SELECTED',
   SET_VALIDATION_LEVEL: 'SET_VALIDATION_LEVEL',
+  SET_NB_COIS_VALIDATED: 'SET_NB_COIS_VALIDATED',
 }
 
 // Helper functions to dispatch actions, optionally with payloads
@@ -25,6 +26,9 @@ export const dispatchAction = {
   },
   set_nb_courses_level_selected: (nb_courses) => {
     return {type: types.SET_NB_COURSES_LEVEL_SELECTED, payload: nb_courses}
+  },
+  set_nb_cois_validated: (nb_cois) => {
+    return {type: types.SET_NB_COIS_VALIDATED, payload: nb_cois}
   },
   set_nb_cois_course_selected: (nb_cois) => {
     return {type: types.SET_NB_COIS_COURSE_SELECTED, payload: nb_cois}
@@ -60,7 +64,7 @@ export const dispatchAction = {
       return {type: types.ADD_LEVEL, payload: {level: level, courses: courses}}
   },
   up_nb_cois_course: (course, level) => {
-      return {type: types.UP_NB_COIS_COURSE, payload: {course: course, level: level} }
+      return {type: types.UP_NB_COIS_COURSE, payload: {id_course: course, level: level} }
   },
   up_nb_courses_level: (level) => {
       return {type: types.UP_NB_COURSES_LEVEL, payload: level }
@@ -88,10 +92,10 @@ export const initialState = {
     centers_of_interest: [],
     levelValidation: [],    // Number of courses validated in the level (level = position in the array)
                             // Position starts at 1
-    courseValidation: [],   // Number of COIs validated in the course Ex. {course: 1, level: 1, nb_cois: 4}
+    courseValidation: [],   // Number of COIs validated in the course Ex. {id_course: 1, level: 1, nb_cois: 4}
     nb_cois_course_selected: 0,
     nb_courses_level_selected: 0,
-
+    nb_cois_validated: 0,
 }
 
 
@@ -111,6 +115,12 @@ export const reducer = (state = {}, action) => {
       return {
         ...state,
 	token: payload,
+      }
+    }
+    case types.SET_NB_COIS_VALIDATED: {
+      return {
+        ...state,
+	nb_cois_validated: payload,
       }
     }
     case types.SET_VALIDATION_COURSES: {
@@ -139,7 +149,7 @@ export const reducer = (state = {}, action) => {
     }
     case types.UP_NB_COIS_COURSE: {
         var exist = state.courseValidation.find(function(course){
-            var found = (course.course === payload.course && course.level === payload.level);
+            var found = (course.id_course === payload.id_course && course.level === payload.level);
             if (found) {
                 // Update the number
                 course.nb_cois += 1;
@@ -147,7 +157,7 @@ export const reducer = (state = {}, action) => {
             return found;
         });
 
-        if (!exist) state.courseValidation.push({course: payload.course, level: payload.level, nb_cois: 1});
+        if (!exist) state.courseValidation.push({id_course: payload.id_course, level: payload.level, nb_cois: 1});
         return state;
     }
     case types.UP_NB_COURSES_LEVEL: {
