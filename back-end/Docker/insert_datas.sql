@@ -56,7 +56,7 @@ VALUES ( '26' ,  'undifined' ,  'PATRIMOINE_CULTUREL' ,  '' ,  'Double Mixte' , 
 INSERT INTO public.course (level, id_course, theme, description) VALUES (1, 1, 'Lyon historique', 'Il était une fois Lyon');
 INSERT INTO public.course (level, id_course, theme, description) VALUES (1, 2, 'Un parcours', 'lorem');
 INSERT INTO public.course (level, id_course, theme, description) VALUES (2, 3, 'Encore un parcours', 'ipsum');
-INSERT INTO public.course (level, id_course, theme, description) VALUES (1, 4, 'L INSA de A a Z', 'A la découverte de campus');
+INSERT INTO public.course (level, id_course, theme, description) VALUES (1, 4, 'L''INSA de A a Z', 'A la découverte du campus');
 
 INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (1, 1, 2, 'coucou', 'debut', 1);
 INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (2, 1, 2, '1:2', 'st1:2', 1);
