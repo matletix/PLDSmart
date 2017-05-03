@@ -75,8 +75,8 @@ INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, p
 INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (14, 1, 1, '1:2', 'st1:2', 9);
 INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (15, 1, 1, '1:2', 'st1:2', 10);
 
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (24, 1, 4, "Je peux être syntaxique abstrait ou généalogique, j'ai des branches mais je suis beaucoup moins pénible que Git.", 'st1:2', 1);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (25, 1, 4, "Je suis une véritable oasis pour les étudiants en pause, une corne d'abondance pour qui m'offres quelques euros.", 'st1:2', 2);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (26, 1, 4, "Je suis immobile, et pourtant je monte et je descend. Nous sommes deux jumeaux gardiens du double mixte, je suis celui de gauche.", 'st1:2', 3);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (24, 1, 4, 'Je peux être syntaxique abstrait ou généalogique, j ai des branches mais je suis beaucoup moins pénible que Git.', 'st1:2', 1);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (25, 1, 4, 'Je suis une véritable oasis pour les étudiants en pause, une corne d abondance pour qui m offres quelques euros', 'st1:2', 2);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (26, 1, 4, 'Je suis immobile, et pourtant je monte et je descend. Nous sommes deux jumeaux gardiens du double mixte, je suis celui de gauche.', 'st1:2', 3);
 
 
