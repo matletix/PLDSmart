@@ -69,6 +69,8 @@ onSuccess = async (e) => {
                 return point.properties.id_course === coi.properties.id_course && point.properties.level === coi.properties.level;
             })
             const nb_cois = cois.length;
+
+            
             console.log('------------------ cois : nb_cois -----------------------')
             console.log(cois + ' : ' + nb_cois)
 
