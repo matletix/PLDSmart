@@ -123,6 +123,25 @@ app.post('/authentificate', function(req, res) {
 
 }) ;
 
+app.post('/signin', function(req, res) {
+    var _pgdao = new pgDAO('user_data');
+
+    var resultCallback = function(){
+        console.log('NEW USER ADDED !');
+        res.status(200).send('ADDED');
+    };
+    var errorCallback = function(){
+        console.log('Error: pseudo already taken');
+        res.status(500).send('ALREADY EXISTS');
+    };
+
+    console.log(req.body);
+    _pgdao.signin(resultCallback, errorCallback,
+        req.body.pseudo, req.body.age, req.body.poids, req.body.sexe,
+        req.body.mail, req.body.mdp);
+
+});
+
 
 // End point to add getting one Feature to insert into the database
 router.post('/grandLyonDataAddOneFeature', function (req, res) {
@@ -275,21 +294,19 @@ router.post('/add_COI_to_course', function (req, res) {
     });
 });
 
-// TODO : dev only
-router.post('/get_Course_coi_content', function (req, res) {
-    var _pgdao = new pgDAO([new Table('course_coi', ['id_course', 'niveau', 'id_coi'])]);
+router.post('/get_used_cois', function (req, res) {
+    var _pgdao = new pgDAO([new Table('course_coi', ['id_coi']), new Table('centers_of_interest', ['id'])]);
 
     _pgdao.findAll({}, function (result) {
-        console.log('COIs : ', result["rows"]);
-        res.status(200).send(result["rows"]);
+        var list = lib.parsePOSTGISToGeoJson(result["rows"]);
+        res.status(200).send( list );
     }, function (err) {
         console.log('Erreur get courses ! ', err);
         res.status(500).send();
-    });
+    }, true);
 });
 
-// TODO : dev only
-router.post('/get_course_content', function(req, res){
+router.post('/get_courses', function(req, res){
 
     var _pgdao = new pgDAO([new Table('course', ['id_course', 'niveau'])]);
 
@@ -320,7 +337,7 @@ router.post('/getParcours/Level', function(req, res){
     console.log("Asking for parcours with level <= " + req.body.level);
     const _pgdao = new pgDAO([new Table('course')]);
     _pgdao.getCoursesLevelInf(req.body, function(sqlResult){
-        result = JSON.stringify(sqlResult.rows);
+        result = sqlResult.rows;
 
         console.log("sending back : " + result);
         res.send(result);
@@ -483,6 +500,34 @@ router.post('/updateUserInfo', function(req, res){
 
 });
 
+// TODO: Course completion registration
+router.post('/courseCompleted', function(req, res){
+    // insert into the database completed course
+    var _params = lib.format(req.body, lib.CourseUserInsertTemplate);
+    var _pgdao = new pgDAO([new Table('course_user_validation', ['id_course', 'level', 'pseudo'])]);
+
+    _pgdao.insert(_params, function () {
+        console.log('courseCompleted : course finie!');
+        res.status(200).send();
+    }, function (err) {
+        console.log('Erreur, enregistrement course finie! ', err);
+        res.status(500).send();
+    });
+});
+router.post('/completedCourses', function(req, res){
+    // get a list of completed courses given the user
+    var _pgdao = new pgDAO([new Table('course_user_validation', ['id_course', 'level', 'pseudo'])]);
+
+    _pgdao.findAll({pseudo: req.body.pseudo}, function (result) {
+        console.log('completedCourses : ', result["rows"]);
+        var courses = result["rows"];
+        for(course of courses) { delete course['pseudo']; };
+        res.status(200).send(courses);
+    }, function (err) {
+        console.log('Erreur get courses ! ', err);
+        res.status(500).send();
+    });
+});
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
 app.use('/api', router);

@@ -41,9 +41,9 @@ class GameModes extends Component {
 		    <ListItem
 		    key={i}
 		    title={item.title}
-		    leftIcon={{name: item.icon, color: '#ffa000'}}
+		    leftIcon={{name: item.icon, color: '#2c3e50'}}
 		    containerStyle={styles.listItem}
-		    chevronColor='#ffa000'
+		    chevronColor='#2c3e50'
          	    onPress = {() => this.onModePress(item.title)}
 		    />
 		))
@@ -58,20 +58,20 @@ class GameModes extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd600',
+    backgroundColor: '#1abc9c',
   },
   title: {
     fontSize: 25,
-    color: '#f38f19',
+    color: '#2966C0',
     textAlign: 'center',
     marginTop: 20,
   },
   listContainer: {
-    borderColor: '#ffa000',
+    borderColor: '#2c3e50',
   },
   listItem: {
-    backgroundColor: '#ffd54f',
-    borderBottomColor: '#ffa000',
+    backgroundColor: '#5C91DF',
+    borderBottomColor: '#2c3e50',
   },
 });
 

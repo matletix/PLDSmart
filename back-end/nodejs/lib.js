@@ -1,4 +1,5 @@
 var rp = require('request-promise');
+var GeoJson = require('geojson');
 
 module.exports.template =  {
     "id": 0,
@@ -151,4 +152,24 @@ module.exports.userUpdateTemplate = {
     "mdp": "",
     "level": "",
     "points": ""
+};
+
+module.exports.parsePOSTGISToGeoJson= function(list){
+    var result = [];
+    for(item of list){
+        var coords = JSON.parse(item['st_asgeojson'])['coordinates'];
+        item['lon'] = coords[0];
+        item['lat'] = coords[1];
+        delete item['st_asgeojson'];
+        delete item['coordinates'];
+        delete item['id'];
+    }
+    return GeoJson.parse( list, { Point: ['lat', 'lon'] } );
+};
+
+module.exports.CourseUserInsertTemplate = {
+    "id_course": "",
+    "level": "",
+    "pseudo": "",
+    "nb_cois": ""
 };

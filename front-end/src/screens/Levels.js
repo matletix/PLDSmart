@@ -12,10 +12,9 @@ import { dispatchAction } from '../redux'
 
 
 const mapStateToProps = (state) => ({
-  courses: state.courses,
   levelMax: state.levelMax,
   totalLevels: state.totalLevels,
-  token: state.token,
+  levelValidation: state.levelValidation,
 })
 
 
@@ -28,12 +27,12 @@ class Levels extends Component {
   onLevelPress = (level) => {
     this.props.navigation.navigate('Courses', {level});
   };
-  
+
   render() {
     let listLevels = []
     for (level=1; level<=this.props.totalLevels; level++)
     {
-	listLevels = [...listLevels, level]
+		listLevels = [...listLevels, level]
     }
     return (
 	<ScrollView style={styles.container}>
@@ -49,7 +48,7 @@ class Levels extends Component {
 		key={i}
 	        title={"Niveau "+level}
 	        containerStyle={locked ? styles.listItemLocked : styles.listItemUnlocked}
-		chevronColor='#ffa000'
+		chevronColor='#2966c0'
 		hideChevron = {locked}
                 onPress = {locked ? null : () => this.onLevelPress(level)}
 		/>
@@ -66,31 +65,31 @@ class Levels extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd600',
+    backgroundColor: '#1abc9c',
   },
   title: {
     fontSize: 25,
-    color: '#f38f19',
+    color: '#2966c0',
     textAlign: 'center',
     marginTop: 20,
   },
   description: {
     fontSize: 14,
-    color: '#f38f19',
+    color: '#2966c0',
     textAlign: 'center',
     marginTop: 20,
     paddingHorizontal: 10,
   },
   listContainer: {
-    borderColor: '#ffa000',
+    borderColor: '#2966c0',
   },
   listItemUnlocked: {
-    backgroundColor: '#ffd54f',
-    borderBottomColor: '#ffa000',
+    backgroundColor: '#5C91DF',
+    borderBottomColor: '#22313F',
   },
   listItemLocked: {
-    backgroundColor: '#ffd54f',
-    borderBottomColor: '#ffa000',
+    backgroundColor: '#7FA6DF',
+    borderBottomColor: '#22313F',
     opacity: 0.7,
   },
 });

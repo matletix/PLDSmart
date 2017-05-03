@@ -22,14 +22,14 @@ class Logout extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd600',
+    backgroundColor: '#1abc9c',
   },
   logo: {
     width: 150,
     height:150,
   },
   textLogo: {
-    color: '#f38f19',
+    color: '#2966c0',
     opacity: 0.8,
     fontSize: 38,
     textAlign: 'center',
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     margin: 5,
     marginHorizontal: 50,
-    backgroundColor: '#f35f19',
+    backgroundColor: '#0D3A7D',
   },
 });
 

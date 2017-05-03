@@ -25,14 +25,14 @@ class Profile extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd600',
+    backgroundColor: '#1abc9c',
   },
   logo: {
     width: 150,
     height:150,
   },
   textLogo: {
-    color: '#f38f19',
+    color: '#2966C0',
     opacity: 0.8,
     fontSize: 38,
     textAlign: 'center',
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginHorizontal: 30,
     paddingHorizontal: 10,
-    backgroundColor: 'rgba(255,255,255,0.4)',
+    backgroundColor: '#75DEC9',
   },
   buttonContainer: {
     margin: 10,
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     margin: 5,
     marginHorizontal: 50,
-    backgroundColor: '#f35f19',
+    backgroundColor: '#0D3A7D',
   },
 });
 

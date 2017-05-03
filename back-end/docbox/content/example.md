@@ -47,6 +47,41 @@ Property | Description
 }
 ```
 
+### Inscription
+
+This is about making a new user
+
+```endpoint
+POST http://localhost:8080/signin
+```
+
+#### Example request
+
+```curl
+curl -X POST --data {"pseudo": "totoro","age": 28,"poids": 70,"sexe": "M","mail": "totoro@totoro.fr","mdp": "mddpp"} https://localhost:8080/signin
+```
+
+
+#### Example request body
+
+```json
+{
+	"pseudo": "totoro",
+	"age": 28,
+	"poids": 70,
+	"sexe": "M",
+	"mail": "totoro@totoro.fr",
+	"mdp": "mddpp"
+}
+```
+
+#### Example response
+
+```json
+"ADDED"
+```
+
+
 ### Update user information
 
 This allows to update users information.
@@ -482,7 +517,7 @@ Property | Description
   }
 ]
 ```
- 
+
 ### Get parcours : Specific
 
 With this endpoint, you can get every COI of a parcours.

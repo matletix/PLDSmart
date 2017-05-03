@@ -81,10 +81,15 @@ pgDAO.prototype.buildQuery = function (_params) {
 
 };
 
-pgDAO.prototype.findAll = function (_params, resultCallback, errorCallback) {
+pgDAO.prototype.findAll = function (_params, resultCallback, errorCallback, coordinates) {
     // Build the query
-    var query = this.buildQuery(_params);
-    query = 'SELECT * FROM ' + query;
+    var query = '';
+    if(coordinates)
+        query = 'SELECT *, ST_AsGeoJSON(coordinates) FROM ';
+    else
+        query = 'SELECT * FROM ';
+    query += this.buildQuery(_params);
+
     this.executeQuery(query, _params, resultCallback, errorCallback);
 };
 
@@ -105,7 +110,8 @@ pgDAO.prototype.buildInsertQuery = function (_params) {
         if (_params[param] && _params[param]['geojson'])
             values += 'ST_GeomFromGeoJSON ( \'' + JSON.stringify(_params[param].geojson) + '\' )';
         else if (_params[param]) {
-            values += ' \'' + _params[param].replace(/'/g, "\'\'") + '\' ';
+            let val = ''+_params[param];
+            values += ' \'' + val.replace(/'/g, "\'\'") + '\' ';
         } else {
             values += 'null';
         }
@@ -266,6 +272,18 @@ pgDAO.prototype.getParcoursCois = function (id_course) {
         });
         //return 1;
     })
+};
+//INSERT INTO user_data VALUES ('tata', 25, 50, 'F', 'tata@insa-lyon.fr', 'mdp');
+pgDAO.prototype.signin = function(callback, errorCbk, pseudo, age, poids, sexe, mail, mdp){
+    pool.query('INSERT INTO user_data VALUES ($1::varchar, $2::int, $3::int, $4::varchar, $5::varchar, $6::varchar)',
+        [pseudo, age, poids, sexe, mail, mdp], function(errSQL, resSQL){
+            if (errSQL) {
+                if (errorCbk) errorCbk(errSQL);
+                return console.error('error running query', errSQL);
+            } else {
+                callback(resSQL);
+            }
+        })
 };
 
 // UPDATE

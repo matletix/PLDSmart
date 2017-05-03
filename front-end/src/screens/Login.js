@@ -13,8 +13,13 @@ import Logo from '../components/Logo'
 import LoginForm from '../components/LoginForm'
 import LoginFormError from '../components/LoginFormError'
 
+var config = require('../config');
 
-const mapStateToProps = (state) => ({})
+const mapStateToProps = (state) => ({
+  	pseudo: state.pseudo,
+	levelMax: state.levelMax,
+	courseValidation: state.courseValidation,
+})
 
 
 class Login extends Component {
@@ -45,13 +50,13 @@ class Login extends Component {
     this.setState({...this.state, error: false})
     this.props.navigation.navigate('Home')
   }
-  
+
   // Triggered when clicking on the Login button
   onLoginPress = async (login, password) => {
     const {dispatch} = this.props
     this.setState({...this.state, loading: true})
     try {
-      const url = 'http://10.0.2.2:8080/authentificate'
+      const url = 'http://'+ config.api_ip +':8080/authentificate'
       const options = {
         method: "POST",
 	timeout: 5000,
@@ -70,12 +75,115 @@ class Login extends Component {
 	console.log(rjson.token)
 
 	// Save returned data in the redux store
-	dispatch(dispatchAction.set_username(login))
-	dispatch(dispatchAction.set_password(password))
+	// dispatch(dispatchAction.set_username(login))
+	// dispatch(dispatchAction.set_password(password))
 	dispatch(dispatchAction.set_token(rjson.token))
-	// dispatch(dispatchAction.set_pseudo(rjson.pseudo))
-	// dispatch(dispatchAction.set_points(rjson.points))
-	// dispatch(dispatchAction.set_levelMax(rjson.levelMax))
+	dispatch(dispatchAction.set_pseudo(rjson.pseudo))
+	dispatch(dispatchAction.set_points(rjson.points))
+	dispatch(dispatchAction.set_levelMax(rjson.level))
+
+	var token = rjson.token;
+
+	// Load all the courses to the store
+	try {
+		const url = 'http://'+ config.api_ip +':8080/api/get_courses'
+		const options = {
+			method: "POST",
+			timeout: 5000,
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({token: token})
+		}
+
+		const response = await fetch(url, options)
+
+		if (response.status == 200) {
+			const courses = await response.json();
+			dispatch(dispatchAction.set_courses(courses));
+			console.log({courses: courses});
+		} else {
+			// TODO: Inform the user
+			console.log("Getting courses FAILED");
+		}
+	} catch(e){
+		// TODO: Inform the user
+		console.log("Connexion to the server to get the courses FAILED", e);
+
+	}
+
+	// Load the centers of interest needed in the courses of all levels
+	try {
+		const url = 'http://'+ config.api_ip +':8080/api/get_used_cois'
+		const options = {
+			method: "POST",
+			timeout: 5000,
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({token: token})
+		}
+
+		const response = await fetch(url, options)
+
+		if (response.status == 200) {
+			const cois = await response.json();
+			let res = dispatch(dispatchAction.set_centers_of_interest(cois.features));
+			console.log('------------------ Dispatch ----------------------------');
+			console.log(res);
+		} else {
+			// TODO: Inform the user
+			console.log("Getting centers of interest FAILED");
+		}
+	} catch(e){
+		// TODO: Inform the user
+		console.log("Connexion to the server to get the centers of interest FAILED", e);
+
+	}
+
+	// Get the completed courses
+	try {
+		const url = 'http://'+ config.api_ip +':8080/api/completedCourses'
+		const options = {
+			method: "POST",
+			timeout: 5000,
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({token: token, pseudo: this.props.pseudo})
+		}
+
+		const response = await fetch(url, options)
+
+		if (response.status == 200) {
+			const courses = await response.json();
+			dispatch(dispatchAction.set_validation_courses(courses));
+			console.log('--------- Validation courses ---------------')
+			console.log(this.props.pseudo + ' : ' + courses);
+		} else {
+			// TODO: Inform the user
+			console.log("Getting completed courses FAILED");
+		}
+	} catch(e){
+		// TODO: Inform the user
+		console.log("Connexion to the server to get the completed courses FAILED", e);
+
+	}
+
+	// Get the number of courses validated in each level
+	var valLevel = [];
+	for (let l = 1; l <= this.props.levelMax; l ++){
+		let courses = Object.assign([], this.props.courseValidation);
+		courses = courses.filter(function(c){
+			return c.level == l;
+		})
+		valLevel[l] = courses.length;
+	}
+	// level validation to the store
+	dispatch(dispatchAction.set_validation_level(valLevel));
 
 	// Reset state
 	this.setState({...this.state, loading: false, error: false, mdpInput: ''})
@@ -158,7 +266,7 @@ class Login extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd600',
+    backgroundColor: '#1abc9c',
   },
   loading: {
     width: 50,

@@ -17,7 +17,8 @@ import RNPolyline  from 'rn-maps-polyline'
 import CourseMapView from '../components/CourseMapView'
 
 const mapStateToProps = (state) => ({
-  api_key: state.api_key,
+	api_key: state.api_key,
+	centers_of_interest: state.centers_of_interest,
 })
 
 
@@ -27,74 +28,9 @@ class Course extends Component {
     this.state = {
       coords: [],
       markers: [],
-      course: {
-	level: 1,
-	id_course: 1,
-	theme: 'La Tête d\'Or',
-	image: 'link to the preview of the course',
-	story_course: 'Découvrez le parc de la Tête d\'Or, passez devant le Musée d\'Art Contemporain et traversez le Zoo de Lyon',
-	duration: '1h14',
-	distance: 6.0,
-	points: [
-	    {
-	    latitude: 45.761163,
-	    longitude: 4.827347,
-	    name: "Cathédrale Saint-Jean-Baptiste",
-	      wikilink: "link to a short summary of the monument/museum/...",
-	      qrcode: "link to an image of the qrcode to scan",
-	    },
-	    {
-	    latitude: 45.761286,
-	    longitude: 4.826620,
-	    name: "Cathédrale St-Jean Trésor",
-	      wikilink: "link to a short summary of the monument/museum/...",
-	      qrcode: "link to an image of the qrcode to scan",
-	    },
-	    {
-	    latitude: 45.761871,
-	    longitude: 4.827364,
-	    name: "Musée Miniature et Cinéma",
-	      wikilink: "link to a short summary of the monument/museum/...",
-	      qrcode: "link to an image of the qrcode to scan",
-	    },
-	    {
-	    latitude: 45.764014,
-	    longitude: 4.827557,
-	    name: "Musées Gardagne",
-	      wikilink: "link to a short summary of the monument/museum/...",
-	      qrcode: "link to an image of the qrcode to scan",
-	    },
-	    {
-	    latitude: 45.764455,
-	    longitude: 4.828188,
-	    name: "Temple du Change",
-	      wikilink: "link to a short summary of the monument/museum/...",
-	      qrcode: "link to an image of the qrcode to scan",
-	    },
-	    {
-	    latitude: 45.761902,
-	    longitude: 4.828290,
-	    name: "Cours d'Appel de Lyon",
-	      wikilink: "link to a short summary of the monument/museum/...",
-	      qrcode: "link to an image of the qrcode to scan",
-	    },
-	    {
-	    latitude: 45.760924,
-	    longitude: 4.828405,
-	    name: "Vis'Art Galerie",
-	      wikilink: "link to a short summary of the monument/museum/...",
-	      qrcode: "link to an image of the qrcode to scan",
-	    },
-	    {
-	    latitude: 45.761163,
-	    longitude: 4.827347,
-	    name: "Cathédrale Saint-Jean-Baptiste",
-	      wikilink: "link to a short summary of the monument/museum/...",
-	      qrcode: "link to an image of the qrcode to scan",
-	    },
-	]
+      duration: 0,
+      distance: 0,
     }
-}
   }
 
   static navigationOptions = ({navigation}) => ({
@@ -102,9 +38,14 @@ class Course extends Component {
   })
 
   componentWillMount() {
+	  const {params} = this.props.navigation.state;
     // Generate the list of markers
     let removeDuplicate = (array) => [...new Set(array)]
-    const newArray = removeDuplicate(this.state.course.points)
+	var points = this.props.centers_of_interest;
+	points = points.filter(function(point){
+		return point.properties.id_course === params.course.id_course && point.properties.level === params.course.level
+	})
+    const newArray = removeDuplicate(points)
     for (i=0; i < newArray.length; i++) {
       // add a unique key attribute to each marker
       newArray[i].key = i
@@ -114,16 +55,18 @@ class Course extends Component {
 
     // Generate the coords to link with polylines
     const mode = 'walking'
-    const points = this.state.course.points
-    const nbPoints = points.length
+	// Filter the points that belong to the course
+	points  = newArray;
+	const nbPoints = points.length;
     console.log("NbPoints:"+nbPoints)
-    const origin = ''+points[0].latitude+'%2C'+points[0].longitude
-    const destination =''+points[nbPoints-1].latitude+'%2C'+points[nbPoints-1].longitude
+
+    const origin = ''+points[0]['geometry']['coordinates'][1]+'%2C'+points[0]['geometry']['coordinates'][0]
+    const destination =''+points[nbPoints-1]['geometry']['coordinates'][1]+'%2C'+points[nbPoints-1]['geometry']['coordinates'][0]
     const APIKEY = this.props.api_key
     let waypoints = []
     for (i=1; i < (nbPoints - 1); i++) {
-      waypoints.push({latitude: points[i].latitude,
-		      longitude: points[i].longitude
+      waypoints.push({latitude: points[i]['geometry']['coordinates'][1],
+		      longitude: points[i]['geometry']['coordinates'][0]
 		     })
     }
     waypoints = RNPolyline.encode(waypoints)
@@ -137,17 +80,61 @@ class Course extends Component {
 	    console.log(JSON.stringify(responseJson))
 	    let newCoords = RNPolyline.decode(responseJson.routes[0].overview_polyline.points)
 	    console.log(JSON.stringify(newCoords))
-	    this.setState({...this.state, coords: newCoords})
+	    let distance = responseJson.routes[0].legs[0].distance.text
+	    let duration = responseJson.routes[0].legs[0].duration.text
+	    this.setState({...this.state, coords: newCoords, duration: duration, distance: distance})
 	  }
   	}).catch(e => {console.warn(e)});
   }
-  
+
+
   render() {
     return (
-	<CourseMapView polylineCoords={this.state.coords}
-	               markers={this.state.markers} />
+
+		<View style={styles.container}>
+			<CourseMapView
+				polylineCoords={this.state.coords}
+				markers={this.state.markers}
+				course= {this.props.navigation.state.params.course}
+				screenObj= {this}
+				distance= {this.state.distance}
+				duration= {this.state.duration}
+			/>
+
+        </View>
+
+
+
     )
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  map: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  content: {
+    backgroundColor: 'deepskyblue',
+    borderWidth: 1,
+    borderColor: 'dodgerblue',
+    padding: 20,
+    margin: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+});
 
 export default connect(mapStateToProps)(Course);

@@ -15,20 +15,18 @@ import { dispatchAction } from '../redux'
 
 const mapStateToProps = (state) => ({
   courses: state.courses,
-  token: state.token,
-})
-
+});
 
 class Courses extends Component {
 
   static navigationOptions = ({navigation}) => ({
     title: "Parcours niveau "+navigation.state.params.level,
   })
-  
+
   onPressSelect = (course) => {
     this.props.navigation.navigate('Course', {course})
   }
-  
+
   render() {
     return (
 	<ScrollView style={styles.container}>
@@ -39,14 +37,14 @@ class Courses extends Component {
 		key={i}
 		title={item.theme}
 		/* image={{uri:item.image}} */
-		image={require('../img/courseExample.png')}
+		image={require('../img/logo.png')}
 		containerStyle={styles.card}
 		imageStyle={styles.image}
 		>
-		<Text style={styles.description}>{item.story_course}</Text>
+		<Text style={styles.description}>{item.description}</Text>
 	      <Divider style={styles.divider}/>
-		<Text style={styles.distance}>Distance: {item.distance} km</Text>
-		<Text style={styles.duree}>Duree: {item.duration}</Text>
+		<Text style={styles.distance}>Distance: {item.distance || 0} km</Text>
+		<Text style={styles.duree}>Duree: {item.duration || 0}</Text>
 	      <Divider style={styles.divider} />
 	      <Button title='Sélectionner' raised buttonStyle={styles.button}
 	    onPress={() => this.onPressSelect(item)}/>
@@ -62,16 +60,16 @@ class Courses extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd600',
+    backgroundColor: '#1ABC9C',
   },
   title: {
     fontSize: 25,
-    color: '#f38f19',
+    color: '#2966c0',
     textAlign: 'center',
     marginTop: 20,
   },
   button: {
-    backgroundColor: '#f38f19',
+    backgroundColor: '#0D3A7D',
   },
   card: {
 

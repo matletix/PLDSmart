@@ -60,3 +60,15 @@ CREATE TABLE "course_coi"(
     FOREIGN KEY (id_coi) REFERENCES centers_of_interest(id)
 );
 CREATE UNIQUE INDEX course_coi_id_index ON course_coi(id_course, level, id_coi);
+
+DROP TABLE IF EXISTS "course_user_validation";
+CREATE TABLE "course_user_validation"(
+    id_course INT NOT NULL,
+    level INT NOT NULL,
+    pseudo VARCHAR(50) NOT NULL,
+    nb_cois INT NOT NULL,
+    CONSTRAINT PK_course_user PRIMARY KEY (id_course, level, pseudo),
+    FOREIGN KEY (id_course, level) REFERENCES course(id_course, level),
+    FOREIGN KEY (pseudo) REFERENCES user_data(pseudo)
+);
+CREATE UNIQUE INDEX course_user_index ON course_coi(id_course, level, pseudo);

@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     height:150,
   },
   textLogo: {
-    color: '#f38f19',
+    color: '#2966c0',
     opacity: 0.8,
     fontSize: 38,
     textAlign: 'center',

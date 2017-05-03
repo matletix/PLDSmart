@@ -29,7 +29,7 @@ class Home extends Component {
   onLogoutPress = () => {
     this.props.navigation.navigate('Logout');
   };
-  
+
   render () {
     return (
       <View style={styles.container}>
@@ -64,7 +64,7 @@ class Home extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 3,
-    backgroundColor: '#ffd600',
+    backgroundColor: '#1abc9c',
     justifyContent: 'center',
   },
   logoContainer: {
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     /*borderRadius: 50,*/
     margin: 5,
     marginHorizontal: 50,
-    backgroundColor: '#f35f19',
+    backgroundColor: '#087A64',
   },
 });
 

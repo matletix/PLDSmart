@@ -11,7 +11,7 @@ import Logout from './screens/Logout';
 import Profile from './screens/Profile';
 import Settings from './screens/Settings';
 import Signin from './screens/Signin';
-
+import QRScan from './screens/QRScan';
 
 
 const Root = StackNavigator({
@@ -45,6 +45,9 @@ const Root = StackNavigator({
   Logout: {
     screen: Logout,
   },
+  QRScan: {
+    screen: QRScan,
+  },
 
 },
 {
@@ -61,7 +64,7 @@ Root.router = {
     console.log('IN THE GET_STATE_FOR_ACTION FUNCTION !');
     if (
       state.routeName === 'Home' &&
-      action.type === NavigationActions.BACK 
+      action.type === NavigationActions.BACK
     ) {
       return null;
     }
@@ -133,4 +136,3 @@ export const MainStack = StackNavigator({
   },
 })
 */
-

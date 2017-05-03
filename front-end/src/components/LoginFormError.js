@@ -25,10 +25,7 @@ class LoginFormError extends Component {
 		value={mdpInput}
 	    />
 	    <View style={styles.center}>
-	    <Text style={styles.error}>{errorMsg} DEBUG:</Text>
-	    <Button
-		title="Continuer quand même"
-		onPress={onContinuePress} />
+	    <Text style={styles.error}>{errorMsg}</Text>
 	    </View>
 
 	    <View style={styles.buttonContainer}>
@@ -58,7 +55,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginHorizontal: 30,
     paddingHorizontal: 10,
-    backgroundColor: 'rgba(255,255,255,0.4)',
+    backgroundColor: '#75dec9',
   },
   buttonContainer: {
     margin: 10,
@@ -68,7 +65,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     margin: 5,
     marginHorizontal: 50,
-    backgroundColor: '#f35f19',
+    backgroundColor: '#087A64',
   },
   error: {
     color: 'red',

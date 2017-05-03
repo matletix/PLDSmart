@@ -43,6 +43,9 @@ remove:
 
 ## PSQL
 setupDB:
-	psql -h localhost postgres -U docker -f create_db.sql 
+	psql -h localhost postgres -U docker -f create_db.sql
 	psql -h localhost felicity -U docker -f create_table.sql
 	psql -h localhost felicity -U docker -f insert_datas.sql
+
+insert:
+	psql -h localhost felicity -U docker -f addCourses.sql
