@@ -194,7 +194,7 @@ class CourseMapView extends Component {
 
 							{ !this.state.showCourseInfo &&
 								<Text>
-									{this.state.selectedMarker.properties.nom}{'\n'}
+									{this.state.selectedMarker.properties.qr_code}{'\n'}
 								</Text>
 							}
 							{!this.state.showCourseInfo &&
