@@ -15,6 +15,8 @@ const mapStateToProps = (state) => ({
   levelMax: state.levelMax,
   totalLevels: state.totalLevels,
   levelValidation: state.levelValidation,
+  courses: state.courses,
+
 })
 
 
@@ -25,7 +27,15 @@ class Levels extends Component {
   }
 
   onLevelPress = (level) => {
-    this.props.navigation.navigate('Courses', {level});
+	  // Update in the store the number of courses in the seleced level
+	  const courses = this.props.courses.filter(function(course){
+		  return course.level === level;
+	  });
+	  const nb_courses = courses.length;
+	  this.props.dispatch(dispatchAction.set_nb_courses_level_selected(nb_courses));
+	  console.log('------------ Nombre de courses in Levels ----------')
+	  console.log(nb_courses);
+	  this.props.navigation.navigate('Courses', {level});
   };
 
   render() {

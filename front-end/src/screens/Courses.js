@@ -15,6 +15,8 @@ import { dispatchAction } from '../redux'
 
 const mapStateToProps = (state) => ({
   courses: state.courses,
+  centers_of_interest: state.centers_of_interest,
+
 });
 
 class Courses extends Component {
@@ -23,9 +25,18 @@ class Courses extends Component {
     title: "Parcours niveau "+navigation.state.params.level,
   })
 
-  onPressSelect = (course) => {
-    this.props.navigation.navigate('Course', {course})
-  }
+	onPressSelect = (course) => {
+		// Update in the store the number of cois in the selected course
+		const cois = this.props.centers_of_interest.filter(function(point){
+			return point.properties.id_course === course.id_course && point.properties.level === course.level;
+		})
+		const nb_cois = cois.length;
+		console.log('-------- IN COURSES ----------------')
+		console.log(nb_cois);
+		this.props.dispatch(dispatchAction.set_nb_cois_course_selected(nb_cois));
+		// Go to the course screen
+		this.props.navigation.navigate('Course', {course})
+	}
 
   render() {
     return (

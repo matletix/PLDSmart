@@ -16,8 +16,18 @@ import { dispatchAction } from '../redux'
 var FadeInView = require('./FadeInView');
 var config = require('../config');
 
+// PINS IMAGES
+var pinA = require('../img/pinblue.png');
+var pinB = require('../img/nextpin.png');
+var pinC = require('../img/castle.png');
+var pinD = require('../img/flag.png');
+
 const mapStateToProps = (state) => ({
   	token: state.token,
+	nb_cois_course_selected: state.nb_cois_course_selected,
+	nb_courses_level_selected: state.nb_courses_level_selected,
+	courseValidation: state.courseValidation,
+	nb_cois_validated: state.nb_cois_validated,
 })
 
 class CourseMapView extends Component {
@@ -39,10 +49,10 @@ class CourseMapView extends Component {
 	  	   	pressure_moy: 0,
 	  	  	humidity_moy: 0,
 	  	   	wind_speed_moy: 0,
-
-		  mapRegion: null,
-		  lastLat: null,
-		  lastLong: null,
+			denivele: 0,
+			mapRegion: null,
+			lastLat: null,
+			lastLong: null,
 
   	  	};
 	}
@@ -83,9 +93,18 @@ class CourseMapView extends Component {
 	  this.props.screenObj.props.navigation.navigate('QRScan', {coi: this.state.selectedMarker});
 	};
 
-
 	async componentWillMount(){
-	const { polylineCoords, markers, duration, distance } = this.props
+
+	const { course, polylineCoords, markers, duration, distance } = this.props
+	// put to the state the number of cois validated
+	var validatedCOIs = this.props.courseValidation.find(function(co){
+		return co.id_course === course.id_course && co.level === course.level;
+	})
+	var nb = 0;
+	if(validatedCOIs) nb = validatedCOIs.nb_cois;
+	this.props.dispatch(dispatchAction.set_nb_cois_validated(nb));
+	
+
 	// Getting aqi moyenne
   	  var aqi_moy = 0;
 
@@ -94,6 +113,9 @@ class CourseMapView extends Component {
 	  var pressure_moy = 0;
 	  var humidity_moy = 0;
 	  var wind_speed_moy = 0;
+
+	  // Getting elavation
+	  var elevation = [];
 
   	  for (let marker of markers){
 		  // Getting the AQI
@@ -141,6 +163,28 @@ class CourseMapView extends Component {
   			} catch (err) {
   				  console.log('THERE IS AN ERROR', err)
   			  }
+
+			// Get elevation
+			try {
+
+    			let response = await fetch('http://'+ config.api_ip +'/api/getElevation',
+    			 {
+    				method: 'POST',
+    				headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', },
+    				body: JSON.stringify({
+    					token: this.props.token,
+    					lat: marker.geometry.coordinates[1],
+    					lon: marker.geometry.coordinates[0],
+    				})
+    			});
+    			const rjson = await response.json()
+    			console.log('-------- ' + JSON.stringify(rjson.properties) + ' ---------------')
+				marker.elevation = rjson.properties.elevation;
+    			elevation.push(rjson.properties.elevation);
+
+    			} catch (err) {
+    				  console.log('THERE IS AN ERROR', err)
+    			  }
   	  }
 	  var nb_marker = markers.length;
 
@@ -151,8 +195,16 @@ class CourseMapView extends Component {
 	  humidity_moy = humidity_moy / nb_marker;
 	  wind_speed_moy = wind_speed_moy / nb_marker;
 
-	  this.setState({...this.state, aqi_moy: aqi_moy, temp_moy: temp_moy, pressure_moy: pressure_moy, humidity_moy: humidity_moy, wind_speed_moy: wind_speed_moy})
-  	  
+	  var denivele = Math.max.apply(null, elevation) - Math.min.apply(null, elevation);
+	  this.setState({
+		  ...this.state,
+		  aqi_moy: aqi_moy,
+		  temp_moy: temp_moy,
+		  pressure_moy: pressure_moy,
+		  humidity_moy: humidity_moy,
+		  wind_speed_moy: wind_speed_moy,
+		  denivele: denivele
+	  })
 
 	}
 
@@ -177,6 +229,11 @@ class CourseMapView extends Component {
 							onPress={ coord => {
 								this.setState({...this.state, selectedMarker: marker, showCourseInfo: false})
 							}}
+							image={
+								(this.props.nb_cois_validated+1 == marker.properties.position_in_course ) && pinB
+								|| (marker.properties.position_in_course == 1) && pinD
+								|| (this.props.nb_cois_course_selected == marker.properties.position_in_course ) && pinC
+								|| pinA }
 						/>
 					))}
 
@@ -194,10 +251,13 @@ class CourseMapView extends Component {
 
 							{ !this.state.showCourseInfo &&
 								<Text>
+
 									{this.state.selectedMarker.properties.qr_code}{'\n'}
+
 								</Text>
 							}
-							{!this.state.showCourseInfo &&
+
+							{!this.state.showCourseInfo && (this.props.nb_cois_validated+1 == this.state.selectedMarker.properties.position_in_course ) &&
 								<Button title= "Scan QR" onPress= {()=> (this.onScanPress())} />
 							}
 
@@ -210,6 +270,8 @@ class CourseMapView extends Component {
 									Pression de l''air: {this.state.pressure_moy} hPa{'\n'}
 									Humidité: {this.state.humidity_moy} % {'\n'}
 									Vitesse du vent: {this.state.wind_speed_moy} m/s {'\n'}
+									Dénivelé: {this.state.denivele} m {'\n'}
+
 								</Text>
 							}
 
