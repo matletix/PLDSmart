@@ -56,7 +56,7 @@ class Login extends Component {
     const {dispatch} = this.props
     this.setState({...this.state, loading: true})
     try {
-      const url = 'http://'+ config.api_ip +':8080/authentificate'
+      const url = 'http://'+ config.api_ip +'/authentificate'
       const options = {
         method: "POST",
 	timeout: 5000,
@@ -86,7 +86,7 @@ class Login extends Component {
 
 	// Load all the courses to the store
 	try {
-		const url = 'http://'+ config.api_ip +':8080/api/get_courses'
+		const url = 'http://'+ config.api_ip +'/api/get_courses'
 		const options = {
 			method: "POST",
 			timeout: 5000,
@@ -115,7 +115,7 @@ class Login extends Component {
 
 	// Load the centers of interest needed in the courses of all levels
 	try {
-		const url = 'http://'+ config.api_ip +':8080/api/get_used_cois'
+		const url = 'http://'+ config.api_ip +'/api/get_used_cois'
 		const options = {
 			method: "POST",
 			timeout: 5000,
@@ -145,7 +145,7 @@ class Login extends Component {
 
 	// Get the completed courses
 	try {
-		const url = 'http://'+ config.api_ip +':8080/api/completedCourses'
+		const url = 'http://'+ config.api_ip +'/api/completedCourses'
 		const options = {
 			method: "POST",
 			timeout: 5000,

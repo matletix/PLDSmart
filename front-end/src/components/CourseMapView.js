@@ -33,7 +33,36 @@ class CourseMapView extends Component {
 	  	    },
 			show: true,
 			showCourseInfo: true,
+		  mapRegion: null,
+		  lastLat: null,
+		  lastLong: null,
   	  	};
+	}
+
+	componentDidMount() {
+	    this.watchID = navigator.geolocation.watchPosition((position) => {
+	    // Create the object to update this.state.mapRegion through the onRegionChange function
+	    let region = {
+		latitude:       position.coords.latitude,
+		longitude:      position.coords.longitude,
+		latitudeDelta:  0.00922*1.5,
+		longitudeDelta: 0.00421*1.5
+	    }
+	    this.onRegionChange(region, region.latitude, region.longitude);
+	    });
+	}
+
+	componentWillUnmount() {
+	    navigator.geolocation.clearWatch(this.watchID);
+	}
+
+	onRegionChange(region, lastLat, lastLong) {
+	  this.setState({...this.state,
+	    mapRegion: region,
+	    // If there are no new values set the current ones
+	    lastLat: lastLat || this.state.lastLat,
+	    lastLong: lastLong || this.state.lastLong
+	    });
 	}
 
 	onMarkerPress(marker){
@@ -49,7 +78,7 @@ class CourseMapView extends Component {
 	getWeather = async (marker) => {
 		try {
 
-		  let response = await fetch('http://'+ config.api_ip +':8080/api/getWeather',
+		  let response = await fetch('http://'+ config.api_ip +'/api/getWeather',
 		   {
 			  method: 'POST',
 			  headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', },
@@ -79,7 +108,7 @@ class CourseMapView extends Component {
 	getAQI = async (marker) => {
 		try {
 
-		  let response = await fetch('http://'+ config.api_ip +':8080/api/getAirQuality',
+		  let response = await fetch('http://'+ config.api_ip +'/api/getAirQuality',
 		   {
 			  method: 'POST',
 			  headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', },
@@ -108,7 +137,7 @@ class CourseMapView extends Component {
 		getElevation = async (marker) => {
 			try {
 
-			  let response = await fetch('http://'+ config.api_ip +':8080/api/getAirQuality',
+			  let response = await fetch('http://'+ config.api_ip +'/api/getAirQuality',
 			   {
 				  method: 'POST',
 				  headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', },
@@ -145,6 +174,8 @@ class CourseMapView extends Component {
 					region={this.state.region}
 					onPress= {map => (this.setState({ ...this.state, showCourseInfo: true } ))}
 					onRegionChange={region => (this.setState({ ...this.state, region } ))}
+					showsUserLocation={true}
+					followUserLocation={true}
 					>
 					{markers.map(marker => (
 						<MapView.Marker

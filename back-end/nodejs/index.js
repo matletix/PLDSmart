@@ -25,7 +25,7 @@ var lib = require('./lib.js');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || 80;        // set our port
+var port = process.env.PORT || 8080;        // set our port
 
 // DATA BASE ACCESS USING POOLS
 // =============================================================================

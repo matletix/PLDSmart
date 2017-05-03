@@ -3,6 +3,7 @@
 import React, { Component } from 'react';
 
 import {
+  Alert,
   StyleSheet,
   TouchableOpacity,
   Text,
@@ -80,7 +81,7 @@ onSuccess = async (e) => {
                 // TODO: Update in the database
                 try {
 
-                  let response = await fetch('http://'+ config.api_ip +':8080/api/courseCompleted',
+                  let response = await fetch('http://'+ config.api_ip +'/api/courseCompleted',
                    {
                       method: 'POST',
                       headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', },
@@ -97,14 +98,14 @@ onSuccess = async (e) => {
                 }
                 // increment the number of validated courses in the level
                 this.props.dispatch(dispatchAction.up_nb_courses_level(coi.properties.level));
-                // Test if the level is completed: the number of courses = total
+		    // Test if the level is completed: the number of courses = total
                 if (this.props.levelValidation[coi.properties.level] === nb_courses){
                     console.log('----------------- level completed --------------------');
 
                     // TODO: Level completed
                     try {
 
-                      let response = await fetch('http://'+ config.api_ip +':8080/api/updateUserInfo',
+                      let response = await fetch('http://'+ config.api_ip +'/api/updateUserInfo',
                        {
                           method: 'POST',
                           headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', },
@@ -128,10 +129,40 @@ onSuccess = async (e) => {
 
                 }
             }
+
+        if (course.nb_cois === nb_cois) { // course finished
+	    Alert.alert("Parcours terminé",
+			"Félicitations ! Vous avez terminé ce parcours.",
+			[
+			  {text: "OK", onPress: () => this.props.navigation.navigate("Home")}
+			],
+			    { cancelable: false }
+		    )
+	} else if (this.props.levelValidation[coi.properties.level] === nb_courses) { // level finished
+	    Alert.alert("Nouveau niveau débloqué",
+		    "Wouhou ! Un nouveau niveau a été débloqué ! Allez vite voir vos nouveaux parcours !",
+		    [
+		      {text: "OK", onPress: () => this.props.navigation.navigate("Levels")}
+		    ],
+			{ cancelable: false }
+		   )
+
+	} else { // QR Code OK
           if (coi.properties.siteweb)
+	  {
             Linking.openURL(coi.properties.siteweb).catch(err => console.error('An error occured', err))
+	    this.props.navigation.goBack()
+	  }
             // close the QR screen
-            this.props.navigation.goBack();
+	    Alert.alert("Point d'intérêt validé",
+		    "Point d'intérêt validé ! Au suivant !",
+		    [
+		      {text: "OK", onPress: () => this.props.navigation.goBack()}
+		    ],
+			{ cancelable: false }
+		   )
+	}
+
       } else {
           console.error('Pas le bon COI ! ', e.data );
       }

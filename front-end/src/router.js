@@ -54,6 +54,13 @@ const Root = StackNavigator({
   initialRouteName: 'Login',
   navigationOptions: {
     headerVisible: true,
+    headerTintColor: "#ffffff",
+    headerTitleStyle: {
+      color: "#ffffff",
+    },
+    headerStyle: {
+      backgroundColor: "#546e7a",
+    },
   },
 })
 
