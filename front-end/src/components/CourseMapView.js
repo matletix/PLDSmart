@@ -3,6 +3,8 @@ import { StyleSheet,
 	 View,
 	 ScrollView,
 	 Text,
+	 TouchableHighlight,
+	 Image,
        } from 'react-native';
 import { Button,
          List,
@@ -15,6 +17,9 @@ import { connect } from 'react-redux'
 import { dispatchAction } from '../redux'
 var FadeInView = require('./FadeInView');
 var config = require('../config');
+
+var btnup = require('../img/up.png');
+var btndown = require('../img/down.png')
 
 // PINS IMAGES
 var pinA = require('../img/pinblue.png');
@@ -103,7 +108,7 @@ class CourseMapView extends Component {
 	var nb = 0;
 	if(validatedCOIs) nb = validatedCOIs.nb_cois;
 	this.props.dispatch(dispatchAction.set_nb_cois_validated(nb));
-	
+
 
 	// Getting aqi moyenne
   	  var aqi_moy = 0;
@@ -134,6 +139,7 @@ class CourseMapView extends Component {
   			const rjson = await response.json()
   			console.log('-------- ' + JSON.stringify(rjson.properties) + ' ---------------')
   			marker.aqi_color = rjson.properties.color;
+			marker.aqi = rjson.properties.aqi;
   			aqi_moy += rjson.properties.aqi;
 
   			} catch (err) {
@@ -241,36 +247,58 @@ class CourseMapView extends Component {
 						coordinates={polylineCoords}
 						strokeWidth={4} />
 				</MapView>
+					<TouchableHighlight
+						onPress={() => (this.setState({...this.state, show: !this.state.show}))}
+						>
+						<Image style={styles.button} source={!this.state.show && btnup ||btndown} />
+					</TouchableHighlight>
 
-					<Button
-						title= "Détails"
-						onPress= {() => (this.setState({...this.state, show: !this.state.show}))}
-					/>
 		  		  	{this.state.show && <FadeInView>
 		  			<View style={styles.content}>
 
+
 							{ !this.state.showCourseInfo &&
-								<Text>
-
-									{this.state.selectedMarker.properties.qr_code}{'\n'}
-
+								<Text
+									style={{marginTop: 5, fontStyle: 'italic', textAlign: 'center'}}
+								>
+									<Text style={{fontWeight: 'bold'}}> Devinette {'\n'}</Text>
+									{'"'}{this.state.selectedMarker.properties.qr_code}{'"'}{'\n'}
+								</Text>
+							}
+							{ !this.state.showCourseInfo &&
+								<Text style={{textAlign: 'center'}}>
+									{this.state.selectedMarker.properties.description}{'\n'}
+									 AU {this.state.selectedMarker.properties.adresse},
+									{this.state.selectedMarker.properties.codepostal},
+									{this.state.selectedMarker.properties.commune}{'\n'}
+									<Text style={{fontWeight: 'bold'}}> {this.state.selectedMarker.properties.siteweb}{'\n'} </Text>
+									<Text style={{fontWeight: 'bold'}}>
+										À {this.state.selectedMarker.elevation} mètres d''altitude{'\n'}
+										<Text
+											style={{color: this.state.selectedMarker.aqi_color}}
+										>AQI à {this.state.selectedMarker.aqi}%{'\n'}</Text>
+									</Text>
 								</Text>
 							}
 
 							{!this.state.showCourseInfo && (this.props.nb_cois_validated+1 == this.state.selectedMarker.properties.position_in_course ) &&
-								<Button title= "Scan QR" onPress= {()=> (this.onScanPress())} />
+								<Button style={{backgroundColor: '#1abc9c'}} title= "Scan QR" onPress= {()=> (this.onScanPress())} />
 							}
 
 							{this.state.showCourseInfo &&
-								<Text>
-									{this.props.course.theme}{'\n'}
-									Durée: {duration}, Distance: {distance}{'\n'}
-									Moyenne AQI: {this.state.aqi_moy}{'\n'}
-									Température: {this.state.temp_moy} °C {'\n'}
-									Pression de l''air: {this.state.pressure_moy} hPa{'\n'}
-									Humidité: {this.state.humidity_moy} % {'\n'}
-									Vitesse du vent: {this.state.wind_speed_moy} m/s {'\n'}
-									Dénivelé: {this.state.denivele} m {'\n'}
+								<Text
+									style={{fontWeight: 'bold', marginTop: 5}}
+								>
+									Parcours {this.props.course.theme}{'\n'}
+								</Text>
+							}{this.state.showCourseInfo &&
+								<Text style={{fontStyle: 'italic', marginTop: 5}}>
+									<Text style={{fontWeight: 'bold'}}> Durée:</Text> {duration},<Text style={{fontWeight: 'bold'}}> Distance: </Text>{distance}{'\n'}
+									<Text style={{fontWeight: 'bold'}}> Moyenne AQI: </Text> {Number((this.state.aqi_moy).toFixed(1))}%{'\n'}
+									<Text style={{fontWeight: 'bold'}}> Température: </Text> {Number((this.state.temp_moy).toFixed(1))} °C {'\n'}
+									<Text style={{fontWeight: 'bold'}}> Humidité: </Text> {Number((this.state.humidity_moy).toFixed(1))} % {'\n'}
+									<Text style={{fontWeight: 'bold'}}> Vitesse du vent: </Text> {Number((this.state.wind_speed_moy).toFixed(1))} m/s {'\n'}
+									<Text style={{fontWeight: 'bold'}}> Dénivelé: </Text> {this.state.denivele} m {'\n'}
 
 								</Text>
 							}
@@ -308,6 +336,7 @@ const styles = StyleSheet.create({
 		right: 0,
 		alignItems: 'center',
 	},
+	
 });
 
 export default connect(mapStateToProps)(CourseMapView);
