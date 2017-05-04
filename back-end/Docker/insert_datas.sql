@@ -53,30 +53,24 @@ VALUES ( '25' ,  'undifined' ,  'PATRIMOINE_CULTUREL' ,  '' ,  'Département Inf
 INSERT INTO centers_of_interest(id, id_sitra1, type, type_detail, nom, adresse, codepostal, commune, telephone, email, siteweb, ouverture, tarifsenclair, tarifsmin, tarifsmax, date_creation, last_update, last_update_fme, coordinates)
 VALUES ( '26' ,  'undifined' ,  'PATRIMOINE_CULTUREL' ,  '' ,  'Double Mixte' ,  '19 Avenue Gaston Berger' ,  '69100' ,  'Villeurbanne' ,  '' ,  '' ,  '' ,  '' ,  'Gratuit' ,  0 ,  0 ,  '2011-03-11 15:05:18' ,  '2016-04-20 06:22:11' ,  '2017-03-16 00:15:34' , ST_GeomFromGeoJSON ( '{"type":"Point","coordinates":[ 4.87261280000007, 45.7807042]}' ));
 
-INSERT INTO public.course (level, id_course, theme, description) VALUES (1, 1, 'Lyon historique', 'Il était une fois Lyon');
-INSERT INTO public.course (level, id_course, theme, description) VALUES (1, 2, 'Un parcours', 'lorem');
-INSERT INTO public.course (level, id_course, theme, description) VALUES (2, 3, 'Encore un parcours', 'ipsum');
-INSERT INTO public.course (level, id_course, theme, description) VALUES (1, 4, 'L''INSA de A a Z', 'A la découverte du campus');
+INSERT INTO public.course (level, id_course, theme, description) VALUES (1, 1, 'L''INSA de A a Z', 'A la découverte du campus');
+INSERT INTO public.course (level, id_course, theme, description) VALUES (1, 2, 'L''INSA de A a Z', 'A la découverte du campus');
 
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (1, 1, 2, 'coucou', 'debut', 1);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (2, 1, 2, '1:2', 'st1:2', 1);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (3, 1, 2, 'bonjour', 'suite', 2);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (4, 1, 2, 'salut', 'fin', 3);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (5, 1, 2, '1:2', 'st1:2', 2);
+INSERT INTO public.course (level, id_course, theme, description) VALUES (2, 1, 'L''INSA de A a Z', 'A la découverte du campus');
+INSERT INTO public.course (level, id_course, theme, description) VALUES (2, 2, 'L''INSA de A a Z', 'A la découverte du campus');
 
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (6, 1, 1, '1:2', 'st1:2', 1);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (7, 1, 1, '1:2', 'st1:2', 2);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (8, 1, 1, '1:2', 'st1:2', 3);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (9, 1, 1, '1:2', 'st1:2', 4);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (10, 1, 1, '1:2', 'st1:2', 5);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (24, 1, 1, 'Je peux être syntaxique abstrait ou généalogique, j ai des branches mais je suis beaucoup moins pénible que Git.', 'Lieu incontournable de l INSA, la KFet !', 1);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (25, 1, 1, 'Je suis une véritable oasis pour les étudiants en pause, une corne d abondance pour qui m offres quelques euros', 'Venez depenser votre argent pour agrementer votre pause.', 2);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (26, 1, 1, 'Je suis immobile, et pourtant je monte et je descend. Nous sommes deux jumeaux gardiens du double mixte, je suis celui de gauche.', 'Parfois bruyant, parfois studieux, le Double Mixte peut revetir bien des tenues !', 3);
 
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (12, 1, 1, '1:2', 'st1:2', 7);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (13, 1, 1, '1:2', 'st1:2', 8);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (14, 1, 1, '1:2', 'st1:2', 9);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (15, 1, 1, '1:2', 'st1:2', 10);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (24, 1, 2, 'Je peux être syntaxique abstrait ou généalogique, j ai des branches mais je suis beaucoup moins pénible que Git.', 'Lieu incontournable de l INSA, la KFet !', 1);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (25, 1, 2, 'Je suis une véritable oasis pour les étudiants en pause, une corne d abondance pour qui m offres quelques euros', 'Venez depenser votre argent pour agrementer votre pause.', 2);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (26, 1, 2, 'Je suis immobile, et pourtant je monte et je descend. Nous sommes deux jumeaux gardiens du double mixte, je suis celui de gauche.', 'Parfois bruyant, parfois studieux, le Double Mixte peut revetir bien des tenues !', 3);
 
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (24, 1, 4, 'Je peux être syntaxique abstrait ou généalogique, j ai des branches mais je suis beaucoup moins pénible que Git.', 'Lieu incontournable de l INSA, la KFet !', 1);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (25, 1, 4, 'Je suis une véritable oasis pour les étudiants en pause, une corne d abondance pour qui m offres quelques euros', 'Venez depenser votre argent pour agrementer votre pause.', 2);
-INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (26, 1, 4, 'Je suis immobile, et pourtant je monte et je descend. Nous sommes deux jumeaux gardiens du double mixte, je suis celui de gauche.', 'Parfois bruyant, parfois studieux, le Double Mixte peut revetir bien des tenues !', 3);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (24, 2, 1, 'Je peux être syntaxique abstrait ou généalogique, j ai des branches mais je suis beaucoup moins pénible que Git.', 'Lieu incontournable de l INSA, la KFet !', 1);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (25, 2, 1, 'Je suis une véritable oasis pour les étudiants en pause, une corne d abondance pour qui m offres quelques euros', 'Venez depenser votre argent pour agrementer votre pause.', 2);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (26, 2, 1, 'Je suis immobile, et pourtant je monte et je descend. Nous sommes deux jumeaux gardiens du double mixte, je suis celui de gauche.', 'Parfois bruyant, parfois studieux, le Double Mixte peut revetir bien des tenues !', 3);
 
-
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (24, 2, 2, 'Je peux être syntaxique abstrait ou généalogique, j ai des branches mais je suis beaucoup moins pénible que Git.', 'Lieu incontournable de l INSA, la KFet !', 1);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (25, 2, 2, 'Je suis une véritable oasis pour les étudiants en pause, une corne d abondance pour qui m offres quelques euros', 'Venez depenser votre argent pour agrementer votre pause.', 2);
+INSERT INTO public.course_coi (id_coi, level, id_course, qr_code, description, position_in_course) VALUES (26, 2, 2, 'Je suis immobile, et pourtant je monte et je descend. Nous sommes deux jumeaux gardiens du double mixte, je suis celui de gauche.', 'Parfois bruyant, parfois studieux, le Double Mixte peut revetir bien des tenues !', 3);
