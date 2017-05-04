@@ -12,6 +12,7 @@ import {
 import { connect } from 'react-redux'
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { dispatchAction } from '../redux'
+import { NavigationActions } from 'react-navigation'
 
 var config = require('../config');
 
@@ -139,42 +140,42 @@ onSuccess = async (e) => {
                 }
             }
 
-        if (course.nb_cois === nb_cois) { // course finished
-	    Alert.alert("Parcours terminé",
-			"Félicitations ! Vous avez terminé ce parcours.",
-			[
-			  {text: "OK", onPress: () => this.props.navigation.navigate("Home")}
-			],
-			    { cancelable: false }
-		    )
-	} else if (this.props.levelValidation[coi.properties.level] === nb_courses) { // level finished
-	    Alert.alert("Nouveau niveau débloqué",
-		    "Wouhou ! Un nouveau niveau a été débloqué ! Allez vite voir vos nouveaux parcours !",
-		    [
-		      {text: "OK", onPress: () => this.props.navigation.navigate("Levels")}
-		    ],
-			{ cancelable: false }
-		   )
+            if (this.props.levelValidation[coi.properties.level] === nb_courses) { // level finished
+        	    Alert.alert("Nouveau niveau débloqué",
+        		    "Wouhou ! Un nouveau niveau a été débloqué ! Allez vite voir vos nouveaux parcours !",
+        		    [
+        		      {text: "OK", onPress: () => {this.props.navigation.goBack()}}
+        		    ],
+        			{ cancelable: false }
+        		   )
 
-	} else { // QR Code OK
-          if (coi.properties.siteweb)
-	  {
-            Linking.openURL(coi.properties.siteweb).catch(err => console.error('An error occured', err))
-	    this.props.navigation.goBack()
-	  }
-            // close the QR screen
-	    Alert.alert("Point d'intérêt validé",
-		    "Point d'intérêt validé ! Au suivant !",
-		    [
-		      {text: "OK", onPress: () => this.props.navigation.goBack()}
-		    ],
-			{ cancelable: false }
-		   )
-	}
+        	} else if (course.nb_cois === nb_cois) { // course finished
+        	    Alert.alert("Parcours terminé",
+        			"Félicitations ! Vous avez terminé ce parcours.",
+        			[
+        			  {text: "OK", onPress: () => {this.props.navigation.goBack();}}
+        			],
+        			    { cancelable: false }
+        		    )
+	               } else  { // QR Code OK
+              if (coi.properties.siteweb)
+    	  {
+                Linking.openURL(coi.properties.siteweb).catch(err => console.error('An error occured', err))
+    	    this.props.navigation.goBack()
+    	  }
+                // close the QR screen
+    	    Alert.alert("Point d'intérêt validé",
+    		    "Point d'intérêt validé ! Au suivant !",
+    		    [
+    		      {text: "OK", onPress: () => this.props.navigation.goBack()}
+    		    ],
+    			{ cancelable: false }
+    		   )
+    	}
 
-      } else {
-          console.error('Pas le bon COI ! ', e.data );
-      }
+          } else {
+              console.error('Pas le bon COI ! ', e.data );
+          }
 
   }
 

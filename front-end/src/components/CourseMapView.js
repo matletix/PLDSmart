@@ -41,8 +41,8 @@ class CourseMapView extends Component {
 		super(props);
 		this.state = {
 	  	    region: {
-	  	      latitude: 45.761163,
-	  	      longitude: 4.827347,
+	  	      latitude: this.props.markers[0].geometry.coordinates[1],
+	  	      longitude: this.props.markers[0].geometry.coordinates[0],
 	  	      latitudeDelta: 0.0022,
 	  	      longitudeDelta: 0.0041,
 	  	    },
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
 		right: 0,
 		alignItems: 'center',
 	},
-	
+
 });
 
 export default connect(mapStateToProps)(CourseMapView);
