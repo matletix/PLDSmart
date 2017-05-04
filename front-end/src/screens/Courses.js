@@ -54,9 +54,6 @@ class Courses extends Component {
 		>
 		<Text style={styles.description}>{item.description}</Text>
 	      <Divider style={styles.divider}/>
-		<Text style={styles.distance}>Distance: {item.distance || 0} km</Text>
-		<Text style={styles.duree}>Duree: {item.duration || 0}</Text>
-	      <Divider style={styles.divider} />
 	      <Button title='Sélectionner' raised buttonStyle={styles.button}
 	    onPress={() => this.onPressSelect(item)}/>
 		</Card>
@@ -88,7 +85,8 @@ const styles = StyleSheet.create({
   image: {
   },
   description: {
-
+	  textAlign: 'center',
+	  fontStyle: 'italic',
   },
   distance: {
 
