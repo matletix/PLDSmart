@@ -11,7 +11,7 @@ $ make installdocker <br/>
 $ make installnode <br/>
 $ make installpsql <br/>
 
-Puis créer le volume om sera stocker la base de données : <br/>
+Puis créer le volume où sera stocké la base de données : <br/>
 $ make createVolume <br/>
 
 Puis finalement lancer le docker : <br/>
