@@ -2,13 +2,33 @@ import React, { Component } from 'react'
 import { StyleSheet,
 	 View,
 	 TextInput,
+     Text,
+     Dimensions,
+     ListItem,
+     Radio,
+     TouchableOpacity,
        } from 'react-native'
-import { Button } from 'react-native-elements'
+import { Button, CheckBox } from 'react-native-elements'
+import Picker from 'react-native-picker'
+//import { GenderPicker } from './GenderPicker'
 
 class SigninForm extends Component {
+    constructor(props){
+		super(props);
+		this.state = {
+			checked: true,
+		};
+	}
+
+	// _onPressHandle(){
+	// 	this.picker.toggle();
+    // }
+    onPressCheck= ()=>(this.setState({checked: !this.state.checked}))
+    //onChangedPickedValue = (pichkedVal) => (setState({pickedValue: pickedVal}))
+
     render() {
-        const { onUsernameInputChange, onMdpInputChange, onMdpConfInputChange, onMailInputChange, 
-            onSigninPress, onWeightInputChange, weightInput, usernameInput, mdpInput, mdpConfInput, mailInput } = this.props
+        const { onUsernameInputChange, onWeightInputChange, onAgeInputChange, onMdpConfInputChange, onMailInputChange, onMdpInputChange, checked, isMale,
+        usernameInput, mdpInput, mailInput, ageInput, mdpConfInput, weightInput, onSigninPress} = this.props
         return (
             <View style={styles.formContainer}>
                 <TextInput
@@ -18,13 +38,41 @@ class SigninForm extends Component {
             value={usernameInput}
             />
             
-                <TextInput
-                    style={styles.input}
-                    placeholder="Poids (kg)"
-                    keyboardType = 'numeric'
-                    onChangeText={(number) => onWeightInputChange(number)}
-                    maxLength = {3}
-                /> 
+            <TextInput
+                style={styles.input}
+                placeholder="Poids (kg)"
+                keyboardType = 'numeric'
+                onChangeText={(number) => onWeightInputChange(number)}
+                maxLength = {3}
+            /> 
+            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            <CheckBox
+                center
+                containerStyle= {{backgroundColor: '#75dec9', borderColor: '#75dec9'}}
+                title='Homme'
+                onPress={this.onPressCheck}
+                checked={this.state.checked}
+                isMale={this.state.checked ? 'M':'F'}
+                />
+
+            <CheckBox
+                center
+                containerStyle= {{backgroundColor: '#75dec9', borderColor: '#75dec9'}}
+                title='Femme'
+                onPress={this.onPressCheck}
+                checked={!this.state.checked}
+                
+                />
+            </View>
+
+            <TextInput
+                style={styles.input}
+                placeholder="Age"
+                keyboardType = 'numeric'
+                onChangeText={(number) => onAgeInputChange(number)}
+                value={ageInput}
+                maxLength = {3}
+            /> 
 
                 <TextInput
             style={styles.input}
@@ -47,6 +95,7 @@ class SigninForm extends Component {
             />
                 <TextInput
             style={styles.input}
+             onChangeText={(text) => onMailInputChange(text)}
             placeholder="Adresse mail"
             value={mailInput}
             />
@@ -55,7 +104,7 @@ class SigninForm extends Component {
             <Button
                 buttonStyle={styles.button}
                 title="Inscription"
-                onPress={onSigninPress} />
+                onPress={(usernameInput, ageInput, weightInput, isMale, mailInput, mdpInput) => onSigninPress(usernameInput, ageInput, weightInput, isMale, mailInput, mdpInput)} />
             </View>
             </View>
         )}
@@ -80,7 +129,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     margin: 5,
     marginHorizontal: 50,
-    backgroundColor: '#f35f19',
+    backgroundColor: '#087A64',
   },
 });
 
