@@ -55,7 +55,7 @@ Le front-end implémenté en React-Native est à lancer avec les deux commandes 
 Une installation préalable des modules nodejs utilisés est nécessaire, et cela à l'aide de la commande : </br>
 `$ npm install`
 
-Le front-end est configuré pour requêter l'API (back-end) hébergé sur une machine virtuelle du Grand Lyon, il faut donc remplacer l'URL/port du fichier front-end/src/config.js par localhost/port pour un serveur back-end tournant en local.
+Le front-end est configuré pour requêter l'API (back-end) hébergé sur une machine virtuelle du Grand Lyon, il faut donc remplacer l'URL:port du fichier front-end/src/config.js par localhost:port pour un serveur back-end tournant en local.
 ## Test
 Des tests peuvent être faits sur des utilisateurs déjà enregistrés dans la base de données : </br>
 pseudo : toto </br>
