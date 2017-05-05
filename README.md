@@ -30,6 +30,10 @@ $ make start
 Et pour arrêter le docker  <br/>
 $ make stop
 
+Puis lancer le server, faire : (dans le dossier back-end/nodejs) <br/>
+$ npm install
+$ npm start
+
 
 ### Documentation
 La documentation de notre API Rest est disponible avec docbox, il faut simplement faire : <br/>
