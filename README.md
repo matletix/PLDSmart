@@ -23,6 +23,10 @@ $ make setupDB <br/>
 
 (le mot de passe est "docker") 
 
+Puis lancer le server, faire : (dans le dossier back-end/nodejs) <br/>
+$ npm install
+$ npm start
+
 ### Second / autre lancement
 Il suffit de faire <br/>
 $ make start
