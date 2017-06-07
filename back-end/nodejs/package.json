@@ -1,0 +1,23 @@
+{
+    "name": "felicity",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "nohup node index.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "h4213",
+    "license": "ISC",
+    "dependencies": {
+        "body-parser": "^1.17.1",
+        "express": "^4.15.2",
+        "geojson-tools": "^0.2.2",
+        "jsonwebtoken": "^7.3.0",
+        "pg": "^6.1.5",
+        "pg-escape": "^0.2.0",
+        "request": "^2.81.0",
+        "request-promise": "^4.2.0",
+        "geojson": "^0.4.1"
+    }
+}

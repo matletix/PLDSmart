@@ -1,0 +1,2 @@
+DROP DATABASE IF EXISTS felicity;
+CREATE DATABASE felicity;
